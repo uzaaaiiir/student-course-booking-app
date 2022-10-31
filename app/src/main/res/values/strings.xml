@@ -21,6 +21,18 @@
     <string name="backBtn">Back</string>
     <string name="searchInstructors">Search Instructors</string>
     <string name="deleteInstructor">Click Row to Delete Instructor</string>
+    <string name="faculty">Faculty (i.e.HIS)</string>
+    <string name="courseName">Course Name</string>
+    <string name="courseCode">Code (i.e.101)</string>
+    <string name="createCourseBtn">Create Course</string>
+    <string name="searchCourse">Enter Course Code</string>
+    <string name="result">Result</string>
+    <string name="courseCodeFull">Course Code</string>
+    <string name="courseNameFull">Course Name</string>
+    <string name="saveChanges">Save Changes</string>
+    <string name="deleteCourse">Delete Course</string>
+    <string name="courseFacultyFull">Faculty</string>
+    <string name="enterFaculty">Enter Faculty</string>
     <string-array name="roles">
         <item>Administrator</item>
         <item>Instructor</item>

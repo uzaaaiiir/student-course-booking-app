@@ -100,7 +100,6 @@ public class ManageInstructorsActivity extends AppCompatActivity {
         list.setAdapter(instructorsArrayAdapter);
     }
 
-
     private void generateUser() {
         Intent intent = getIntent();
         Bundle bundle = intent.getExtras();

@@ -8,6 +8,8 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 import androidx.annotation.Nullable;
 
+import com.example.coursebookingapp.Course;
+import com.example.coursebookingapp.CourseCode;
 import com.example.coursebookingapp.user.Administrator;
 import com.example.coursebookingapp.user.Instructor;
 import com.example.coursebookingapp.user.Student;
@@ -27,6 +29,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     public static final String COLUMN_COURSE_CODE = "COURSE_CODE";
     public static final String COLUMN_COURSE_NAME = "COURSE_NAME";
     public static final String COLUMN_COURSE_INSTRUCTOR_ID = "COURSE_INSTRUCTOR_ID";
+    public static final String COLUMN_FACULTY_CODE = "FACULTY_CODE";
 
 
     public DatabaseHandler(@Nullable Context context) {
@@ -37,7 +40,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         String createUserTable = "CREATE TABLE " + USER_TABLE + " (" + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " + COLUMN_USERNAME + " TEXT, " + COLUMN_PASSWORD + " TEXT, " + COLUMN_ROLE + " TEXT)";
-        String createCourseTable = "CREATE TABLE " + COURSE_TABLE + " (" + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " + COLUMN_COURSE_CODE + " TEXT, " + COLUMN_COURSE_NAME + " TEXT, " + COLUMN_COURSE_INSTRUCTOR_ID + " INTEGER, FOREIGN KEY (" + COLUMN_COURSE_INSTRUCTOR_ID + ") REFERENCES USER_TABLE(" + COLUMN_COURSE_INSTRUCTOR_ID + "))";
+        String createCourseTable = "CREATE TABLE " + COURSE_TABLE + " (" + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " + COLUMN_FACULTY_CODE + " TEXT, " + COLUMN_COURSE_CODE + " INTEGER, " + COLUMN_COURSE_NAME + " TEXT)";
 
         db.execSQL(createUserTable);
         db.execSQL(createCourseTable);
@@ -54,6 +57,13 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         values.put(COLUMN_PASSWORD, "admin123");
         values.put(COLUMN_ROLE, "Administrator");
         db.insert(USER_TABLE, null, values);
+
+        ContentValues courseValues = new ContentValues();
+        courseValues.put(COLUMN_ID, 0);
+        courseValues.put(COLUMN_FACULTY_CODE, "Faculty");
+        courseValues.put(COLUMN_COURSE_CODE, 0);
+        courseValues.put(COLUMN_COURSE_NAME, "Name");
+        db.insert(COURSE_TABLE, null, courseValues);
     }
 
     @Override
@@ -169,5 +179,104 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         } else {
             return false;
         }
+    }
+
+    public boolean addCourse(Course course) {
+        if (courseExists(course)) { return false; }
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues cv = new ContentValues();
+
+        cv.put(COLUMN_FACULTY_CODE, course.getCourseCode().getFaculty().toString());
+        cv.put(COLUMN_COURSE_CODE, course.getCourseCode().getCode());
+        cv.put(COLUMN_COURSE_NAME, course.getCourseName().toString());
+
+        long insert = db.insert(COURSE_TABLE, null, cv);
+
+        if (insert != -1) { return true; }
+
+        return false;
+    }
+
+
+    public boolean courseExists(Course course) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "SELECT * FROM " + COURSE_TABLE + " WHERE (" + COLUMN_FACULTY_CODE + " = \'" + course.getCourseCode().getFaculty().toString() + "\') AND (" + COLUMN_COURSE_CODE + " = \'" + course.getCourseCode().getCode() + "\')";
+
+        Cursor cursor = db.rawQuery(query, null);
+
+        if (cursor.moveToFirst()) {
+            return true;
+        }
+
+        return false;
+    }
+
+    private int findCourseID(Course course) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "SELECT * FROM " + COURSE_TABLE + " WHERE (" + COLUMN_FACULTY_CODE + " = \'" + course.getCourseCode().getFaculty().toString() + "\') AND (" + COLUMN_COURSE_CODE + " = \'" + Integer.toString(course.getCourseCode().getCode()) + "\')";
+
+        Cursor cursor = db.rawQuery(query, null);
+
+        if (cursor.moveToFirst()) {
+            return cursor.getInt(0);
+        }
+
+        return -1;
+    }
+
+    public Course findCourse(Course course) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "SELECT * FROM " + COURSE_TABLE + " WHERE (" + COLUMN_FACULTY_CODE + " = \'" + course.getCourseCode().getFaculty().toString() + "\') AND (" + COLUMN_COURSE_CODE + " = " + Integer.toString(course.getCourseCode().getCode()) + ")";
+
+        Cursor cursor = db.rawQuery(query, null);
+        Course courseToReturn;
+        CourseCode courseCode = new CourseCode();
+        String courseName = "";
+        int id = 0;
+
+        if (cursor.moveToFirst()) {
+            do {
+                id = cursor.getInt(0);
+                courseCode.setFaculty(cursor.getString(1));
+                courseCode.setCode(cursor.getInt(2));
+                courseName = cursor.getString(3);
+            } while (cursor.moveToNext());
+        }
+        courseToReturn = new Course(courseCode, courseName);
+        courseToReturn.setId(id);
+
+
+        return courseToReturn;
+
+    }
+
+    public boolean editCourse(int id, Course newValues) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues cv = new ContentValues();
+        cv.put(COLUMN_FACULTY_CODE, newValues.getCourseCode().getFaculty().toString());
+        cv.put(COLUMN_COURSE_CODE, newValues.getCourseCode().getCode());
+        cv.put(COLUMN_COURSE_NAME, newValues.getCourseName());
+
+        if (db.update(COURSE_TABLE, cv, COLUMN_ID + "=?", new String[]{String.valueOf(id)}) == 1) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public boolean deleteCourse(Course course) {
+        SQLiteDatabase db = this.getWritableDatabase();
+//        String query = "DELETE FROM " + COURSE_TABLE + " WHERE (" + COLUMN_FACULTY_CODE + " = \'" + course.getCourseCode().getFaculty().toString() + "\') AND (" + COLUMN_COURSE_CODE + " = \'" + Integer.toString(course.getCourseCode().getCode()) + "\')";
+//        Cursor cursor = db.rawQuery(query, null);
+//        int courseId = findCourseID(course);
+//
+//        if (cursor.moveToFirst()) {
+//            return true;
+//        } else {
+//            return false;
+//        }
+
+        return db.delete(COURSE_TABLE, COLUMN_ID + "=" + course.getId(), null) > 0;
     }
 }
