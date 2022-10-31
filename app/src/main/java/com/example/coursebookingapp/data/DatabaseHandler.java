@@ -1,13 +1,17 @@
-package com.example.coursebookingapp;
+package com.example.coursebookingapp.data;
 
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.widget.Toast;
 
 import androidx.annotation.Nullable;
+
+import com.example.coursebookingapp.user.Administrator;
+import com.example.coursebookingapp.user.Instructor;
+import com.example.coursebookingapp.user.Student;
+import com.example.coursebookingapp.user.User;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,11 +28,10 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     public static final String COLUMN_COURSE_NAME = "COURSE_NAME";
     public static final String COLUMN_COURSE_INSTRUCTOR_ID = "COURSE_INSTRUCTOR_ID";
 
-    User root = new User(-1, "admin", "admin123", "Administrator");
-
 
     public DatabaseHandler(@Nullable Context context) {
-        super(context, "course-booking.db", null, 1);
+
+        super(context, "course.db", null, 2);
     }
 
     @Override
@@ -39,15 +42,28 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         db.execSQL(createUserTable);
         db.execSQL(createCourseTable);
 
-        if (!userExists(root)) {
-            addRoot();
-        }
+        setDefaultLabel(db);
 
+    }
+
+    public void setDefaultLabel(SQLiteDatabase db) {
+        // create default label
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_ID, 0);
+        values.put(COLUMN_USERNAME, "admin");
+        values.put(COLUMN_PASSWORD, "admin123");
+        values.put(COLUMN_ROLE, "Administrator");
+        db.insert(USER_TABLE, null, values);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        // Drop older table if existed
+        db.execSQL("DROP TABLE IF EXISTS " + USER_TABLE);
+        db.execSQL("DROP TABLE IF EXISTS " + COURSE_TABLE);
 
+        // Create tables again
+        onCreate(db);
     }
 
     public boolean addRoot() {
@@ -119,10 +135,10 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         return students;
     }
 
-    public List<User> allInstructors() {
+    public List<User> allInstructors(String search) {
         List<User> instructors = new ArrayList<>();
 
-        String query = "SELECT * FROM " + USER_TABLE + " WHERE " + COLUMN_ROLE + " = Instructor";
+        String query = "SELECT * FROM " + USER_TABLE + " WHERE " + COLUMN_ROLE + " = \'Instructor\' AND (" + COLUMN_USERNAME + " LIKE \'%" + search + "%\')";
         SQLiteDatabase db = this.getReadableDatabase();
 
         Cursor cursor = db.rawQuery(query, null);

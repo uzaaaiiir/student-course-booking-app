@@ -1,4 +1,4 @@
-package com.example.coursebookingapp;
+package com.example.coursebookingapp.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -8,7 +8,9 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
-import java.io.Serializable;
+import com.example.coursebookingapp.R;
+import com.example.coursebookingapp.data.DatabaseHandler;
+import com.example.coursebookingapp.user.User;
 
 public class MainActivity extends AppCompatActivity {
     DatabaseHandler dbHandler = new DatabaseHandler(MainActivity.this);

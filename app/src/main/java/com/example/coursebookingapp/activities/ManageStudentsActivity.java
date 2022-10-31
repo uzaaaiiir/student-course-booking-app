@@ -1,4 +1,4 @@
-package com.example.coursebookingapp;
+package com.example.coursebookingapp.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -14,10 +14,14 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.coursebookingapp.R;
+import com.example.coursebookingapp.data.DatabaseHandler;
+import com.example.coursebookingapp.user.User;
+
 import java.util.List;
 
-public class ManageInstructorsActivity extends AppCompatActivity {
-    DatabaseHandler dbHandler = new DatabaseHandler(ManageInstructorsActivity.this);
+public class ManageStudentsActivity extends AppCompatActivity {
+    DatabaseHandler dbHandler = new DatabaseHandler(ManageStudentsActivity.this);
     ArrayAdapter studentsArrayAdapter;
     User user;
     Button logout, search, back;
@@ -30,14 +34,14 @@ public class ManageInstructorsActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_manage_instructors);
+        setContentView(R.layout.activity_manage_students);
 
-        logout = findViewById(R.id.logout3);
-        search = findViewById(R.id.search2);
-        searchBox = findViewById(R.id.searchStudents2);
+        logout = findViewById(R.id.logout2);
+        search = findViewById(R.id.search);
+        searchBox = findViewById(R.id.searchStudents);
         list = findViewById(R.id.listOfStudents);
-        welcome = findViewById(R.id.welcome2);
-        back = findViewById(R.id.backBtn2);
+        welcome = findViewById(R.id.welcome);
+        back = findViewById(R.id.backBtn);
 
         generateUser();
         welcome.setText("Welcome, " + user.getUsername() + "\n" +
@@ -46,7 +50,7 @@ public class ManageInstructorsActivity extends AppCompatActivity {
         search.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                DatabaseHandler dbHandler = new DatabaseHandler(ManageInstructorsActivity.this);
+                DatabaseHandler dbHandler = new DatabaseHandler(ManageStudentsActivity.this);
                 searchCharacters = searchBox.getText().toString();
                 updateListView(dbHandler);
             }
@@ -57,7 +61,7 @@ public class ManageInstructorsActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 User userDeleted = (User) parent.getItemAtPosition(position);
                 dbHandler.deleteUser(userDeleted);
-                Toast.makeText(ManageInstructorsActivity.this, "Instructor Deleted: " + userDeleted.getUsername() + ".", Toast.LENGTH_SHORT).show();
+                Toast.makeText(ManageStudentsActivity.this, "Student Deleted: " + userDeleted.getUsername(), Toast.LENGTH_SHORT).show();
                 updateListView(dbHandler);
             }
         });
@@ -68,10 +72,22 @@ public class ManageInstructorsActivity extends AppCompatActivity {
                 startMainActivity();
             }
         });
+
+        logout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startLoginActivity();
+            }
+        });
+
     }
 
+    private void startLoginActivity() {
+        Intent loginActivity = new Intent(ManageStudentsActivity.this, LoginActivity.class);
+        startActivity(loginActivity);
+    }
     private void startMainActivity() {
-        Intent mainActivity = new Intent(ManageInstructorsActivity.this, MainActivity.class);
+        Intent mainActivity = new Intent(ManageStudentsActivity.this, MainActivity.class);
         mainActivity.putExtra("Username", user.getUsername());
         mainActivity.putExtra("Password", user.getPassword());
         mainActivity.putExtra("Role", user.getRole());
@@ -80,7 +96,7 @@ public class ManageInstructorsActivity extends AppCompatActivity {
 
     private void updateListView(DatabaseHandler dbHandler) {
         List<User> studentsWithSearchCharacters = dbHandler.allStudents(searchCharacters);
-        studentsArrayAdapter = new ArrayAdapter<User>(ManageInstructorsActivity.this, android.R.layout.simple_list_item_1, studentsWithSearchCharacters);
+        studentsArrayAdapter = new ArrayAdapter<User>(ManageStudentsActivity.this, android.R.layout.simple_list_item_1, studentsWithSearchCharacters);
         list.setAdapter(studentsArrayAdapter);
     }
 

@@ -1,4 +1,4 @@
-package com.example.coursebookingapp;
+package com.example.coursebookingapp.user;
 
 public class Student extends User {
     public static final String STUDENT = "Student";

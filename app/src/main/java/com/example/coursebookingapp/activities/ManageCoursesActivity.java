@@ -1,8 +1,10 @@
-package com.example.coursebookingapp;
+package com.example.coursebookingapp.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
+
+import com.example.coursebookingapp.R;
 
 public class ManageCoursesActivity extends AppCompatActivity {
 

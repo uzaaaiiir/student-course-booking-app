@@ -1,4 +1,4 @@
-package com.example.coursebookingapp;
+package com.example.coursebookingapp.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -11,7 +11,10 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
 
-import java.io.Serializable;
+import com.example.coursebookingapp.user.Administrator;
+import com.example.coursebookingapp.data.DatabaseHandler;
+import com.example.coursebookingapp.R;
+import com.example.coursebookingapp.user.User;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -39,6 +42,7 @@ public class LoginActivity extends AppCompatActivity {
         login = findViewById(R.id.login);
         signUp = findViewById(R.id.signUp);
         roleDropdown = findViewById(R.id.role_dropdown);
+        User root = new Administrator(-1, "admin", "admin123");
 
         generateLoginDropdown();
         databaseHandler = new DatabaseHandler(LoginActivity.this);
@@ -46,9 +50,10 @@ public class LoginActivity extends AppCompatActivity {
         login.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                DatabaseHandler databaseHandler = new DatabaseHandler(LoginActivity.this);
+
                 User user;
                 try {
-                    DatabaseHandler databaseHandler = new DatabaseHandler(LoginActivity.this);
                     user = new User(-1, username.getText().toString(), password.getText().toString(), roleDropdown.getSelectedItem().toString());
                     if (databaseHandler.userExists(user)) {
                         Toast.makeText(LoginActivity.this, "Success. Logging in as " + user.getRole().toString() + ".", Toast.LENGTH_SHORT).show();
