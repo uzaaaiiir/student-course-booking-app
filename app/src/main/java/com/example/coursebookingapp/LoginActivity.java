@@ -43,7 +43,6 @@ public class LoginActivity extends AppCompatActivity {
         generateLoginDropdown();
         databaseHandler = new DatabaseHandler(LoginActivity.this);
 
-
         login.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

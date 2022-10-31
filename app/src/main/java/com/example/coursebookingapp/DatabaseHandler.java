@@ -28,7 +28,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
 
     public DatabaseHandler(@Nullable Context context) {
-        super(context, "course.db", null, 1);
+        super(context, "course-booking.db", null, 1);
     }
 
     @Override
@@ -94,10 +94,10 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         return false;
     }
 
-    public List<User> allStudents() {
+    public List<User> allStudents(String search) {
         List<User> students = new ArrayList<>();
 
-        String query = "SELECT * FROM " + USER_TABLE + " WHERE " + COLUMN_ROLE + " = Student";
+        String query = "SELECT * FROM " + USER_TABLE + " WHERE " + COLUMN_ROLE + " = \'Student\' AND (" + COLUMN_USERNAME + " LIKE \'%" + search + "%\')";
         SQLiteDatabase db = this.getReadableDatabase();
 
         Cursor cursor = db.rawQuery(query, null);

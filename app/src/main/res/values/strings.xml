@@ -15,6 +15,12 @@
     <string name="manageInstructors">Manage Instructors</string>
     <string name="manageStudents">Manage Students</string>
     <string name="logout">Logout</string>
+    <string name="searchStudents">Search Students</string>
+    <string name="searchBtn">Search</string>
+    <string name="deleteStudent">Click on Row to Delete Student.</string>
+    <string name="backBtn">Back</string>
+    <string name="searchInstructors">Search Instructors</string>
+    <string name="deleteInstructor">Click Row to Delete Instructor</string>
     <string-array name="roles">
         <item>Administrator</item>
         <item>Instructor</item>
