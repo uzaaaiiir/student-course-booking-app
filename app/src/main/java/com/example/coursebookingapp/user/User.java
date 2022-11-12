@@ -1,7 +1,12 @@
 package com.example.coursebookingapp.user;
 
-public class User {
+import android.content.Context;
 
+import com.example.coursebookingapp.activities.LoginActivity;
+import com.example.coursebookingapp.data.DatabaseHandler;
+
+public class User {
+    private static User currentUser;
     private int id;
     private String username;
     private String password;
@@ -15,6 +20,14 @@ public class User {
         this.username = username;
         this.password = password;
         this.role = role;
+    }
+
+    public static void setCurrentUser(User user) {
+        currentUser = user;
+    }
+
+    public static User getCurrentUser() {
+        return currentUser;
     }
 
     public int getId() {
@@ -45,6 +58,18 @@ public class User {
         return role;
     }
 
+    public boolean isAdministrator() {
+        return this.getRole().equals("Administrator");
+    }
+
+    public boolean isInstructor() {
+        return this.getRole().equals("Instructor");
+    }
+
+    public boolean isStudent() {
+        return this.getRole().equals("Student");
+    }
+
     public void setRole(String role) {
         this.role = role;
     }
@@ -52,5 +77,26 @@ public class User {
     @Override
     public String toString() {
         return getRole() + ": " + getUsername();
+    }
+
+    public boolean checkIfUserExists(Context context) {
+        DatabaseHandler databaseHandler = new DatabaseHandler(context);
+
+        if (databaseHandler.userExists(this)) {
+            databaseHandler.close();
+            return true;
+        }
+
+        databaseHandler.close();
+        return false;
+    }
+
+    public boolean addUser(Context context) {
+        DatabaseHandler databaseHandler = new DatabaseHandler(context);
+
+        boolean addedSuccessfully = databaseHandler.addUser(this);
+
+        databaseHandler.close();
+        return addedSuccessfully;
     }
 }

@@ -23,6 +23,8 @@ public class LoginActivity extends AppCompatActivity {
     public static final String ADMINISTRATOR_NOT_ALLOWED = "Cannot make account as an Administrator.";
     public static final String SUCCESSFUL_SIGN_UP = "Successful sign up. Enter details to Login.";
     public static final String ERROR = "Error. Cannot Sign-up.";
+    public static final String MISSING_USERNAME_OR_PASSWORD = "Must enter both Username and Password.";
+    public static final String INCORRECT_USERNAME_OR_PASSWORD = "Incorrect username or password. Try again.";
     EditText username, password;
     Button login, signUp;
     Spinner roleDropdown;
@@ -36,15 +38,10 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
 
 
-        // Reference EditTexts and Button
-        username = findViewById(R.id.username);
-        password = findViewById(R.id.password);
-        login = findViewById(R.id.login);
-        signUp = findViewById(R.id.signUp);
-        roleDropdown = findViewById(R.id.role_dropdown);
+        assignInputs();
         User root = new Administrator(-1, "admin", "admin123");
-
         generateLoginDropdown();
+
         databaseHandler = new DatabaseHandler(LoginActivity.this);
 
         login.setOnClickListener(new View.OnClickListener() {
@@ -55,17 +52,17 @@ public class LoginActivity extends AppCompatActivity {
                 User user;
                 try {
                     user = new User(-1, username.getText().toString(), password.getText().toString(), roleDropdown.getSelectedItem().toString());
-                    if (databaseHandler.userExists(user)) {
-                        Toast.makeText(LoginActivity.this, "Success. Logging in as " + user.getRole().toString() + ".", Toast.LENGTH_SHORT).show();
-                        username.setText("");
-                        password.setText("");
+                    if (user.checkIfUserExists(LoginActivity.this)) {
+                        printMessage("Success. Logging in as " + user.getRole());
+                        emptyUsernameAndPasswordFields(username, password);
+                        User.setCurrentUser(user);
                         startMainActivity(user);
                     } else {
-                        Toast.makeText(LoginActivity.this, "Incorrect username or password. Try again.", Toast.LENGTH_SHORT).show();
+                        printMessage(INCORRECT_USERNAME_OR_PASSWORD);
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
-                    Toast.makeText(LoginActivity.this, UNSUCCESSFUL_LOGIN, Toast.LENGTH_SHORT).show();
+                    printMessage(UNSUCCESSFUL_LOGIN);
                 }
             }
         });
@@ -73,27 +70,33 @@ public class LoginActivity extends AppCompatActivity {
         signUp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (username.getText().toString().isEmpty() || password.getText().toString().isEmpty()) {
-                    Toast.makeText(LoginActivity.this, "Must enter both Username and Password.", Toast.LENGTH_SHORT).show();
+                if (usernameOrPasswordEmpty()) {
+                    printMessage(MISSING_USERNAME_OR_PASSWORD);
                 }
                 else {
                     User user = new User(-1, username.getText().toString(), password.getText().toString(), roleDropdown.getSelectedItem().toString());
-                    if (databaseHandler.userExists(user)) {
-                        Toast.makeText(LoginActivity.this, ALREADY_EXISTS, Toast.LENGTH_SHORT).show();
-                    } else if (user.getRole().equals("Administrator")) {
-                        Toast.makeText(LoginActivity.this, ADMINISTRATOR_NOT_ALLOWED, Toast.LENGTH_SHORT).show();
-                    } else if (databaseHandler.addUser(user)) {
-                        Toast.makeText(LoginActivity.this, SUCCESSFUL_SIGN_UP, Toast.LENGTH_SHORT).show();
-                        password.setText("");
-                        username.setText("");
+                    if (user.checkIfUserExists(LoginActivity.this)) {
+                        printMessage(ALREADY_EXISTS);
+                    } else if (user.isAdministrator()) {
+                        printMessage(ADMINISTRATOR_NOT_ALLOWED);
+                    } else if (user.addUser(LoginActivity.this)) {
+                        printMessage(SUCCESSFUL_SIGN_UP);
+                        emptyUsernameAndPasswordFields(password, username);
                     } else {
-                        Toast.makeText(LoginActivity.this, ERROR, Toast.LENGTH_SHORT).show();
+                        printMessage(ERROR);
                     }
                 }
             }
         });
+    }
 
-
+    private void assignInputs() {
+        // Reference EditTexts and Button
+        username = findViewById(R.id.username);
+        password = findViewById(R.id.password);
+        login = findViewById(R.id.login);
+        signUp = findViewById(R.id.signUp);
+        roleDropdown = findViewById(R.id.role_dropdown);
     }
 
     private void startMainActivity(User user) {
@@ -108,5 +111,18 @@ public class LoginActivity extends AppCompatActivity {
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.roles, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_item);
         roleDropdown.setAdapter(adapter);
+    }
+
+    private void printMessage(String message) {
+        Toast.makeText(LoginActivity.this, message, Toast.LENGTH_SHORT).show();
+    }
+
+    private void emptyUsernameAndPasswordFields(EditText password, EditText username) {
+        password.setText("");
+        username.setText("");
+    }
+
+    private boolean usernameOrPasswordEmpty() {
+        return username.getText().toString().isEmpty() || password.getText().toString().isEmpty();
     }
 }

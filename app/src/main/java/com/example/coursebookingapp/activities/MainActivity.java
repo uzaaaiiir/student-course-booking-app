@@ -23,15 +23,9 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        logout = findViewById(R.id.logout);
-        manageCourses = findViewById(R.id.manageCourses);
-        manageInstructors = findViewById(R.id.manageInstructors);
-        manageStudents = findViewById(R.id.manageStudents);
-        welcome = findViewById(R.id.Welcome);
-
+        assignButtons();
         generateUser();
-        welcome.setText("Welcome, " + user.getUsername() + "\n" +
-                " (" +user.getRole()+ ")");
+        setWelcomeText();
         enableAdminPermissions();
 
         logout.setOnClickListener(new View.OnClickListener() {
@@ -62,6 +56,19 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    private void setWelcomeText() {
+        welcome.setText("Welcome, " + user.getUsername() + "\n" +
+                " (" +user.getRole()+ ")");
+    }
+
+    private void assignButtons() {
+        logout = findViewById(R.id.logout);
+        manageCourses = findViewById(R.id.manageCourses);
+        manageInstructors = findViewById(R.id.manageInstructors);
+        manageStudents = findViewById(R.id.manageStudents);
+        welcome = findViewById(R.id.Welcome);
     }
 
     private void startLoginActivity() {
