@@ -2,6 +2,7 @@ package com.example.coursebookingapp.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -15,7 +16,6 @@ import com.example.coursebookingapp.user.User;
 public class MainActivity extends AppCompatActivity {
     DatabaseHandler dbHandler = new DatabaseHandler(MainActivity.this);
     Button logout, manageCourses, manageInstructors, manageStudents;
-    User user;
     TextView welcome;
 
     @Override
@@ -24,43 +24,33 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         assignButtons();
-        generateUser();
         setWelcomeText();
         enableAdminPermissions();
 
         logout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startLoginActivity();
+                startNewActivity(LoginActivity.class);
             }
         });
 
         manageInstructors.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
-                startManageInstructorsActivity();
-            }
+            public void onClick(View v) { startNewActivity(ManageInstructorsActivity.class); }
         });
 
         manageStudents.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
-                startManageStudentsActivity();
-            }
+            public void onClick(View v) { startNewActivity(ManageStudentsActivity.class);}
         });
 
         manageCourses.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startManageCoursesActivity();
+                startNewActivity(ManageCoursesActivity.class);
             }
         });
 
-    }
-
-    private void setWelcomeText() {
-        welcome.setText("Welcome, " + user.getUsername() + "\n" +
-                " (" +user.getRole()+ ")");
     }
 
     private void assignButtons() {
@@ -71,46 +61,18 @@ public class MainActivity extends AppCompatActivity {
         welcome = findViewById(R.id.Welcome);
     }
 
-    private void startLoginActivity() {
-        Intent loginActivity = new Intent(MainActivity.this, LoginActivity.class);
-        startActivity(loginActivity);
+    private void setWelcomeText() {
+        welcome.setText("Welcome, " + User.getCurrentUser().getUsername() + "\n" +
+                " (" + User.getCurrentUser().getRole() + ")");
     }
 
-    private void startManageCoursesActivity() {
-        Intent manageCoursesActivity = new Intent(MainActivity.this, ManageCoursesActivity.class);
-        manageCoursesActivity.putExtra("Username", user.getUsername());
-        manageCoursesActivity.putExtra("Password", user.getPassword());
-        manageCoursesActivity.putExtra("Role", user.getRole());
-        startActivity(manageCoursesActivity);
-    }
-    private void startManageInstructorsActivity() {
-        Intent manageInstructorsActivity = new Intent(MainActivity.this, ManageInstructorsActivity.class);
-        manageInstructorsActivity.putExtra("Username", user.getUsername());
-        manageInstructorsActivity.putExtra("Password", user.getPassword());
-        manageInstructorsActivity.putExtra("Role", user.getRole());
-        startActivity(manageInstructorsActivity);
-    }
-
-    private void startManageStudentsActivity() {
-        Intent manageStudentsActivity = new Intent(MainActivity.this, ManageStudentsActivity.class);
-        manageStudentsActivity.putExtra("Username", user.getUsername());
-        manageStudentsActivity.putExtra("Password", user.getPassword());
-        manageStudentsActivity.putExtra("Role", user.getRole());
-        startActivity(manageStudentsActivity);
-    }
-
-    private void generateUser() {
-        Intent intent = getIntent();
-        Bundle bundle = intent.getExtras();
-
-        if (bundle != null) {
-            user = new User(-1, bundle.getString("Username"), bundle.getString("Password"), bundle.getString("Role"));
-
-        }
+    private void startNewActivity(Class activityToStart) {
+        Intent activity = new Intent(MainActivity.this, activityToStart);
+        startActivity(activity);
     }
 
     private void enableAdminPermissions() {
-        if (user.getRole().equals("Instructor") || user.getRole().equals("Student")) {
+        if (User.getCurrentUser().getRole().equals("Instructor") || User.getCurrentUser().getRole().equals("Student")) {
             manageStudents.setEnabled(false);
             manageInstructors.setEnabled(false);
         }

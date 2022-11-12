@@ -29,9 +29,6 @@ public class LoginActivity extends AppCompatActivity {
     Button login, signUp;
     Spinner roleDropdown;
 
-    DatabaseHandler databaseHandler;
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,13 +39,9 @@ public class LoginActivity extends AppCompatActivity {
         User root = new Administrator(-1, "admin", "admin123");
         generateLoginDropdown();
 
-        databaseHandler = new DatabaseHandler(LoginActivity.this);
-
         login.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                DatabaseHandler databaseHandler = new DatabaseHandler(LoginActivity.this);
-
                 User user;
                 try {
                     user = new User(-1, username.getText().toString(), password.getText().toString(), roleDropdown.getSelectedItem().toString());
@@ -56,7 +49,7 @@ public class LoginActivity extends AppCompatActivity {
                         printMessage("Success. Logging in as " + user.getRole());
                         emptyUsernameAndPasswordFields(username, password);
                         User.setCurrentUser(user);
-                        startMainActivity(user);
+                        startNewActivity(MainActivity.class);
                     } else {
                         printMessage(INCORRECT_USERNAME_OR_PASSWORD);
                     }
@@ -99,12 +92,9 @@ public class LoginActivity extends AppCompatActivity {
         roleDropdown = findViewById(R.id.role_dropdown);
     }
 
-    private void startMainActivity(User user) {
-        Intent mainActivity = new Intent(LoginActivity.this, MainActivity.class);
-        mainActivity.putExtra("Username", user.getUsername());
-        mainActivity.putExtra("Password", user.getPassword());
-        mainActivity.putExtra("Role", user.getRole());
-        startActivity(mainActivity);
+    private void startNewActivity(Class classToBegin) {
+        Intent activity = new Intent(LoginActivity.this, classToBegin);
+        startActivity(activity);
     }
 
     private void generateLoginDropdown() {

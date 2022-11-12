@@ -21,14 +21,11 @@ import com.example.coursebookingapp.user.User;
 import java.util.List;
 
 public class ManageInstructorsActivity extends AppCompatActivity {
-    DatabaseHandler dbHandler = new DatabaseHandler(ManageInstructorsActivity.this);
     ArrayAdapter instructorsArrayAdapter;
-    User user;
     Button logout, search, back;
     ListView list;
     EditText searchBox;
     TextView welcome;
-    String searchCharacters;
 
     @SuppressLint("MissingInflatedId")
     @Override
@@ -36,23 +33,14 @@ public class ManageInstructorsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_manage_instructors);
 
-        logout = findViewById(R.id.logout3);
-        search = findViewById(R.id.search2);
-        searchBox = findViewById(R.id.searchStudents2);
-        list = findViewById(R.id.listOfStudents);
-        welcome = findViewById(R.id.welcome2);
-        back = findViewById(R.id.backBtn2);
-
-        generateUser();
-        welcome.setText("Welcome, " + user.getUsername() + "\n" +
-                " (" +user.getRole()+ ")");
+        assignInputs();
+        setWelcomeText();
 
         search.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                DatabaseHandler dbHandler = new DatabaseHandler(ManageInstructorsActivity.this);
-                searchCharacters = searchBox.getText().toString();
-                updateListView(dbHandler);
+                String searchCharacters = searchBox.getText().toString();
+                updateListView(searchCharacters);
             }
         });
 
@@ -60,53 +48,54 @@ public class ManageInstructorsActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 User userDeleted = (User) parent.getItemAtPosition(position);
-                dbHandler.deleteUser(userDeleted);
-                Toast.makeText(ManageInstructorsActivity.this, "Instructor Deleted: " + userDeleted.getUsername() + ".", Toast.LENGTH_SHORT).show();
-                updateListView(dbHandler);
+                userDeleted.deleteUser(ManageInstructorsActivity.this);
+                printMessage("Instructor Deleted: " + userDeleted);
+                updateListView("");
             }
         });
 
         back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startMainActivity();
+                startNewActivity(MainActivity.class);
             }
         });
 
         logout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startLoginActivity();
+                startNewActivity(LoginActivity.class);
             }
         });
     }
 
-    private void startLoginActivity() {
-        Intent loginActivity = new Intent(ManageInstructorsActivity.this, LoginActivity.class);
-        startActivity(loginActivity);
+    private void printMessage(String message) {
+        Toast.makeText(ManageInstructorsActivity.this, message, Toast.LENGTH_SHORT).show();
     }
 
-    private void startMainActivity() {
-        Intent mainActivity = new Intent(ManageInstructorsActivity.this, MainActivity.class);
-        mainActivity.putExtra("Username", user.getUsername());
-        mainActivity.putExtra("Password", user.getPassword());
-        mainActivity.putExtra("Role", user.getRole());
-        startActivity(mainActivity);
+    private void assignInputs() {
+        logout = findViewById(R.id.logout3);
+        search = findViewById(R.id.search2);
+        searchBox = findViewById(R.id.searchStudents2);
+        list = findViewById(R.id.listOfStudents);
+        welcome = findViewById(R.id.welcome2);
+        back = findViewById(R.id.backBtn2);
     }
 
-    private void updateListView(DatabaseHandler dbHandler) {
-        List<User> instructorsWithSearchCharacters = dbHandler.allInstructors(searchCharacters);
+    private void setWelcomeText() {
+        welcome.setText("Welcome, " + User.getCurrentUser().getUsername() + "\n" +
+                " (" + User.getCurrentUser().getRole() + ")");
+    }
+
+    private void startNewActivity(Class activityToStart) {
+        Intent activity = new Intent(ManageInstructorsActivity.this, activityToStart);
+        startActivity(activity);
+    }
+
+    private void updateListView(String searchCharacters) {
+        List<User> instructorsWithSearchCharacters = User.getAllInstructors(ManageInstructorsActivity.this ,searchCharacters);
         instructorsArrayAdapter = new ArrayAdapter<User>(ManageInstructorsActivity.this, android.R.layout.simple_list_item_1, instructorsWithSearchCharacters);
         list.setAdapter(instructorsArrayAdapter);
     }
 
-    private void generateUser() {
-        Intent intent = getIntent();
-        Bundle bundle = intent.getExtras();
-
-        if (bundle != null) {
-            user = new User(-1, bundle.getString("Username"), bundle.getString("Password"), bundle.getString("Role"));
-
-        }
-    }
 }

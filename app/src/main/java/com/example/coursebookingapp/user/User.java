@@ -5,6 +5,8 @@ import android.content.Context;
 import com.example.coursebookingapp.activities.LoginActivity;
 import com.example.coursebookingapp.data.DatabaseHandler;
 
+import java.util.List;
+
 public class User {
     private static User currentUser;
     private int id;
@@ -81,7 +83,6 @@ public class User {
 
     public boolean checkIfUserExists(Context context) {
         DatabaseHandler databaseHandler = new DatabaseHandler(context);
-
         if (databaseHandler.userExists(this)) {
             databaseHandler.close();
             return true;
@@ -93,10 +94,22 @@ public class User {
 
     public boolean addUser(Context context) {
         DatabaseHandler databaseHandler = new DatabaseHandler(context);
-
         boolean addedSuccessfully = databaseHandler.addUser(this);
-
         databaseHandler.close();
         return addedSuccessfully;
+    }
+
+    public static List<User> getAllInstructors(Context context, String search) {
+        DatabaseHandler databaseHandler = new DatabaseHandler(context);
+        List<User> instructorsSearched = databaseHandler.allInstructors(search);
+        databaseHandler.close();
+        return instructorsSearched;
+    }
+
+    public boolean deleteUser(Context context) {
+        DatabaseHandler databaseHandler = new DatabaseHandler(context);
+        boolean deleted = databaseHandler.deleteUser(this);
+        databaseHandler.close();
+        return deleted;
     }
 }
