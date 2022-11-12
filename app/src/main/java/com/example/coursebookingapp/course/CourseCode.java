@@ -1,10 +1,8 @@
-package com.example.coursebookingapp;
+package com.example.coursebookingapp.course;
 
 public class CourseCode {
     private String faculty;
     private int code;
-
-
 
     public CourseCode() {
     }

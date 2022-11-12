@@ -11,8 +11,8 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.coursebookingapp.Course;
-import com.example.coursebookingapp.CourseCode;
+import com.example.coursebookingapp.course.Course;
+import com.example.coursebookingapp.course.CourseCode;
 import com.example.coursebookingapp.R;
 import com.example.coursebookingapp.data.DatabaseHandler;
 import com.example.coursebookingapp.user.User;

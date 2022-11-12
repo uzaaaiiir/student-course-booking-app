@@ -8,8 +8,8 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 import androidx.annotation.Nullable;
 
-import com.example.coursebookingapp.Course;
-import com.example.coursebookingapp.CourseCode;
+import com.example.coursebookingapp.course.Course;
+import com.example.coursebookingapp.course.CourseCode;
 import com.example.coursebookingapp.user.Administrator;
 import com.example.coursebookingapp.user.Instructor;
 import com.example.coursebookingapp.user.Student;

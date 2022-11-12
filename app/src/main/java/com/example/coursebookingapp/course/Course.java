@@ -1,10 +1,13 @@
-package com.example.coursebookingapp;
+package com.example.coursebookingapp.course;
+
+import com.example.coursebookingapp.user.Instructor;
 
 public class Course {
 
     private CourseCode courseCode;
     private String courseName;
     private int id;
+    private Instructor courseInstructor;
 
     public Course(CourseCode courseCode, String courseName) {
         this.courseCode = courseCode;
