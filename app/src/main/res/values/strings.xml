@@ -33,6 +33,19 @@
     <string name="deleteCourse">Delete Course</string>
     <string name="courseFacultyFull">Faculty</string>
     <string name="enterFaculty">Enter Faculty</string>
+    <string name="clearText">Clear</string>
+    <string name="viewAll">View All</string>
+    <string name="courseStartDate">Course Starting Date</string>
+    <string name="courseEndDate">Course Ending Date</string>
+    <string name="teach">Enroll As Instructor</string>
+    <string name="hours">Hours</string>
+    <string name="courseDescription">Course Description</string>
+    <string name="numberOfStudents">Number of Students</string>
+    <string name="updateStatus">Update Status</string>
+    <string name="instructorName">Instructor Name</string>
+    <string name="createAccount">Create Account</string>
+    <string name="signUpInfo">Create an Instructor Account</string>
+    <string name="facultyCode">Faculty Code</string>
     <string-array name="roles">
         <item>Administrator</item>
         <item>Instructor</item>
