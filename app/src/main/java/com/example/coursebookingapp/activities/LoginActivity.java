@@ -73,17 +73,22 @@ public class LoginActivity extends AppCompatActivity {
         signUp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                User user = new User (-1, username.getText().toString(), password.getText().toString(), roleDropdown.getSelectedItem().toString());
-                if (databaseHandler.userExists(user)) {
-                    Toast.makeText(LoginActivity.this, ALREADY_EXISTS, Toast.LENGTH_SHORT).show();
-                } else if (user.getRole().equals("Administrator")) {
-                    Toast.makeText(LoginActivity.this, ADMINISTRATOR_NOT_ALLOWED, Toast.LENGTH_SHORT).show();
-                } else if (databaseHandler.addUser(user)) {
-                    Toast.makeText(LoginActivity.this, SUCCESSFUL_SIGN_UP, Toast.LENGTH_SHORT).show();
-                    password.setText("");
-                    username.setText("");
-                } else {
-                    Toast.makeText(LoginActivity.this, ERROR, Toast.LENGTH_SHORT).show();
+                if (username.getText().toString().isEmpty() || password.getText().toString().isEmpty()) {
+                    Toast.makeText(LoginActivity.this, "Must enter both Username and Password.", Toast.LENGTH_SHORT).show();
+                }
+                else {
+                    User user = new User(-1, username.getText().toString(), password.getText().toString(), roleDropdown.getSelectedItem().toString());
+                    if (databaseHandler.userExists(user)) {
+                        Toast.makeText(LoginActivity.this, ALREADY_EXISTS, Toast.LENGTH_SHORT).show();
+                    } else if (user.getRole().equals("Administrator")) {
+                        Toast.makeText(LoginActivity.this, ADMINISTRATOR_NOT_ALLOWED, Toast.LENGTH_SHORT).show();
+                    } else if (databaseHandler.addUser(user)) {
+                        Toast.makeText(LoginActivity.this, SUCCESSFUL_SIGN_UP, Toast.LENGTH_SHORT).show();
+                        password.setText("");
+                        username.setText("");
+                    } else {
+                        Toast.makeText(LoginActivity.this, ERROR, Toast.LENGTH_SHORT).show();
+                    }
                 }
             }
         });
