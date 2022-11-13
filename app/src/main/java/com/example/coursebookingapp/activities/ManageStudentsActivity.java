@@ -57,7 +57,7 @@ public class ManageStudentsActivity extends AppCompatActivity {
         back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startNewActivity(MainActivity.class);
+                startNewActivity(AdminMainActivity.class);
             }
         });
 
@@ -94,7 +94,7 @@ public class ManageStudentsActivity extends AppCompatActivity {
     }
 
     private void updateListView(String searchCharacters) {
-        List<User> studentsWithSearchCharacters = User.getAllInstructors(ManageStudentsActivity.this ,searchCharacters);
+        List<User> studentsWithSearchCharacters = User.getAllStudents(ManageStudentsActivity.this ,searchCharacters);
         studentsArrayAdapter = new ArrayAdapter<User>(ManageStudentsActivity.this, android.R.layout.simple_list_item_1, studentsWithSearchCharacters);
         list.setAdapter(studentsArrayAdapter);
     }

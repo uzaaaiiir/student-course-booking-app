@@ -1,5 +1,6 @@
 package com.example.coursebookingapp.data;
 
+import android.annotation.SuppressLint;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -10,11 +11,13 @@ import androidx.annotation.Nullable;
 
 import com.example.coursebookingapp.course.Course;
 import com.example.coursebookingapp.course.CourseCode;
-import com.example.coursebookingapp.user.Administrator;
 import com.example.coursebookingapp.user.Instructor;
 import com.example.coursebookingapp.user.Student;
 import com.example.coursebookingapp.user.User;
 
+import org.apache.commons.lang3.SerializationUtils;
+
+import java.time.DayOfWeek;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,19 +31,23 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     public static final String COURSE_TABLE = "COURSE_TABLE";
     public static final String COLUMN_COURSE_CODE = "COURSE_CODE";
     public static final String COLUMN_COURSE_NAME = "COURSE_NAME";
-    public static final String COLUMN_COURSE_INSTRUCTOR_ID = "COURSE_INSTRUCTOR_ID";
     public static final String COLUMN_FACULTY_CODE = "FACULTY_CODE";
+
+    // New Course Columns
+    public static final String COLUMN_COURSE_OBJECT = "COURSE_OBJECT";
+    public static final String COLUMN_DAY_OFFERED_ONE = "DAY_OFFERED_1";
+    public static final String COLUMN_DAY_OFFERED_TWO = "DAY_OFFERED_2";
 
 
     public DatabaseHandler(@Nullable Context context) {
 
-        super(context, "course.db", null, 2);
+        super(context, "course.db", null, 6);
     }
 
     @Override
     public void onCreate(SQLiteDatabase db) {
         String createUserTable = "CREATE TABLE " + USER_TABLE + " (" + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " + COLUMN_USERNAME + " TEXT, " + COLUMN_PASSWORD + " TEXT, " + COLUMN_ROLE + " TEXT)";
-        String createCourseTable = "CREATE TABLE " + COURSE_TABLE + " (" + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " + COLUMN_FACULTY_CODE + " TEXT, " + COLUMN_COURSE_CODE + " INTEGER, " + COLUMN_COURSE_NAME + " TEXT)";
+        String createCourseTable = "CREATE TABLE " + COURSE_TABLE + " (" + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " + COLUMN_FACULTY_CODE + " TEXT, " + COLUMN_COURSE_CODE + " INTEGER, " + COLUMN_COURSE_NAME + " TEXT, " + COLUMN_COURSE_OBJECT + " BLOB, " + COLUMN_DAY_OFFERED_ONE + " TEXT, " + COLUMN_DAY_OFFERED_TWO  + " TEXT)";
 
         db.execSQL(createUserTable);
         db.execSQL(createCourseTable);
@@ -63,6 +70,9 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         courseValues.put(COLUMN_FACULTY_CODE, "Faculty");
         courseValues.put(COLUMN_COURSE_CODE, 0);
         courseValues.put(COLUMN_COURSE_NAME, "Name");
+        courseValues.put(COLUMN_COURSE_OBJECT, makeByte(new Course()));
+        courseValues.put(COLUMN_DAY_OFFERED_ONE, "SATURDAY");
+        courseValues.put(COLUMN_DAY_OFFERED_TWO, "SUNDAY");
         db.insert(COURSE_TABLE, null, courseValues);
     }
 
@@ -76,20 +86,12 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         onCreate(db);
     }
 
-    public boolean addRoot() {
-        SQLiteDatabase db = this.getWritableDatabase();
-        ContentValues cv = new ContentValues();
+    public byte[] makeByte(Course course) {
+        return SerializationUtils.serialize(course);
+    }
 
-        Administrator admin = new Administrator(-1, "admin", "admin123");
-
-        cv.put(COLUMN_USERNAME, admin.getUsername());
-        cv.put(COLUMN_PASSWORD, admin.getPassword());
-        cv.put(COLUMN_ROLE, admin.getRole().toString());
-
-        long insert = db.insert(USER_TABLE, null, cv);
-        if (insert != -1) { return true; }
-
-        return false;
+    public Course read(byte[] data) {
+        return SerializationUtils.deserialize(data);
     }
 
     public boolean addUser(User user) {
@@ -98,32 +100,31 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
         cv.put(COLUMN_USERNAME, user.getUsername());
         cv.put(COLUMN_PASSWORD, user.getPassword());
-        cv.put(COLUMN_ROLE, user.getRole().toString());
+        cv.put(COLUMN_ROLE, user.getRole());
 
         long insert = db.insert(USER_TABLE, null, cv);
 
-        if (insert != -1) { return true; }
-
-        return false;
+        return insert != -1;
     }
 
     public boolean userExists(User user) {
         SQLiteDatabase db = this.getReadableDatabase();
-        String query = "SELECT * FROM " + USER_TABLE + " WHERE (" + COLUMN_USERNAME + " = \'" + user.getUsername().toString() + "\') AND (" + COLUMN_PASSWORD + " = \'" + user.getPassword().toString() + "\') AND (" + COLUMN_ROLE + " = \'" + user.getRole().toString() + "\')";
+        String query = "SELECT * FROM " + USER_TABLE + " WHERE (" + COLUMN_USERNAME + " = '" + user.getUsername() + "') AND (" + COLUMN_PASSWORD + " = '" + user.getPassword() + "') AND (" + COLUMN_ROLE + " = '" + user.getRole() + "')";
 
         Cursor cursor = db.rawQuery(query, null);
 
         if (cursor.moveToFirst()) {
+            cursor.close();
             return true;
         }
-
+        cursor.close();
         return false;
     }
 
     public List<User> allStudents(String search) {
         List<User> students = new ArrayList<>();
 
-        String query = "SELECT * FROM " + USER_TABLE + " WHERE " + COLUMN_ROLE + " = \'Student\' AND (" + COLUMN_USERNAME + " LIKE \'%" + search + "%\')";
+        String query = "SELECT * FROM " + USER_TABLE + " WHERE " + COLUMN_ROLE + " = 'Student' AND (" + COLUMN_USERNAME + " LIKE '%" + search + "%')";
         SQLiteDatabase db = this.getReadableDatabase();
 
         Cursor cursor = db.rawQuery(query, null);
@@ -148,7 +149,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     public List<User> allInstructors(String search) {
         List<User> instructors = new ArrayList<>();
 
-        String query = "SELECT * FROM " + USER_TABLE + " WHERE " + COLUMN_ROLE + " = \'Instructor\' AND (" + COLUMN_USERNAME + " LIKE \'%" + search + "%\')";
+        String query = "SELECT * FROM " + USER_TABLE + " WHERE " + COLUMN_ROLE + " = 'Instructor' AND (" + COLUMN_USERNAME + " LIKE '%" + search + "%')";
         SQLiteDatabase db = this.getReadableDatabase();
 
         Cursor cursor = db.rawQuery(query, null);
@@ -171,62 +172,141 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
     public boolean deleteUser(User user) {
         SQLiteDatabase db = this.getWritableDatabase();
-        String query = "DELETE FROM " + USER_TABLE + " WHERE (" + COLUMN_USERNAME + " = \'" + user.getUsername().toString() + "\') AND (" + COLUMN_PASSWORD + " = \'" + user.getPassword().toString() + "\') AND (" + COLUMN_ROLE + " = \'" + user.getRole().toString() + "\')";
+        String query = "DELETE FROM " + USER_TABLE + " WHERE (" + COLUMN_USERNAME + " = '" + user.getUsername() + "') AND (" + COLUMN_PASSWORD + " = '" + user.getPassword() + "') AND (" + COLUMN_ROLE + " = '" + user.getRole() + "')";
         Cursor cursor = db.rawQuery(query, null);
 
         if (cursor.moveToFirst()) {
+            cursor.close();
             return true;
         } else {
+            cursor.close();
             return false;
         }
     }
+
+    // COURSES
 
     public boolean addCourse(Course course) {
         if (courseExists(course)) { return false; }
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues cv = new ContentValues();
 
-        cv.put(COLUMN_FACULTY_CODE, course.getCourseCode().getFaculty().toString());
+        cv.put(COLUMN_FACULTY_CODE, course.getCourseCode().getFaculty());
         cv.put(COLUMN_COURSE_CODE, course.getCourseCode().getCode());
-        cv.put(COLUMN_COURSE_NAME, course.getCourseName().toString());
+        cv.put(COLUMN_COURSE_NAME, course.getCourseName());
+        cv.put(COLUMN_COURSE_OBJECT, makeByte(course));
 
         long insert = db.insert(COURSE_TABLE, null, cv);
 
-        if (insert != -1) { return true; }
-
-        return false;
+        return insert != -1;
     }
 
 
     public boolean courseExists(Course course) {
         SQLiteDatabase db = this.getReadableDatabase();
-        String query = "SELECT * FROM " + COURSE_TABLE + " WHERE (" + COLUMN_FACULTY_CODE + " = \'" + course.getCourseCode().getFaculty().toString() + "\') AND (" + COLUMN_COURSE_CODE + " = \'" + course.getCourseCode().getCode() + "\')";
+        String query = "SELECT * FROM " + COURSE_TABLE + " WHERE (" + COLUMN_FACULTY_CODE + " = '" + course.getCourseCode().getFaculty() + "') AND (" + COLUMN_COURSE_CODE + " = '" + course.getCourseCode().getCode() + "')";
 
-        Cursor cursor = db.rawQuery(query, null);
-
-        if (cursor.moveToFirst()) {
-            return true;
-        }
-
-        return false;
+        @SuppressLint("Recycle") Cursor cursor = db.rawQuery(query, null);
+        return cursor.moveToFirst();
     }
 
-    private int findCourseID(Course course) {
+    public List<Course> findCourses(Course course, int searchOption) {
         SQLiteDatabase db = this.getReadableDatabase();
-        String query = "SELECT * FROM " + COURSE_TABLE + " WHERE (" + COLUMN_FACULTY_CODE + " = \'" + course.getCourseCode().getFaculty().toString() + "\') AND (" + COLUMN_COURSE_CODE + " = \'" + Integer.toString(course.getCourseCode().getCode()) + "\')";
+        List<Course> coursesFound = new ArrayList<>();
+        String query = "";
+
+        switch(searchOption) {
+            case 1:
+                query = "SELECT * FROM " + COURSE_TABLE + " WHERE (" + COLUMN_DAY_OFFERED_ONE + " = '" + course.getDayOfWeek1().toString() + "') OR (" + COLUMN_DAY_OFFERED_TWO + " = " + course.getDayOfWeek2().toString() + ")";
+                break;
+            case 2:
+                query = "SELECT * FROM " + COURSE_TABLE + " WHERE (" + COLUMN_COURSE_NAME + " LIKE '%" + course.getCourseName() + "%')";
+                break;
+            case 3:
+                query = "SELECT * FROM " + COURSE_TABLE + " WHERE ((" + COLUMN_DAY_OFFERED_ONE + " = '" + course.getDayOfWeek1().toString() + "') OR (" + COLUMN_DAY_OFFERED_TWO + " = " + course.getDayOfWeek2().toString() + ")) AND (" + COLUMN_COURSE_NAME + " LIKE '%" + course.getCourseName() + "%')";
+                break;
+            case 4:
+                query = "SELECT * FROM " + COURSE_TABLE + " WHERE ((" + COLUMN_COURSE_CODE + " LIKE '%" + course.getCourseCode().getCode() + "%') AND (" + COLUMN_FACULTY_CODE + " LIKE '%" + course.getCourseCode().getFaculty() + "%'))";
+                break;
+            case 5:
+                query = "SELECT * FROM " + COURSE_TABLE + " WHERE ((" + COLUMN_DAY_OFFERED_ONE + " = '" + course.getDayOfWeek1().toString() + "') OR (" + COLUMN_DAY_OFFERED_TWO + " = " + course.getDayOfWeek2().toString() + ")) AND ((" + COLUMN_COURSE_CODE + " LIKE '%" + course.getCourseCode().getCode() + "%') AND (" + COLUMN_FACULTY_CODE + " LIKE '%" + course.getCourseCode().getFaculty() + "%'))";
+                break;
+            case 6:
+                query = "SELECT * FROM " + COURSE_TABLE + " WHERE ((" + COLUMN_COURSE_CODE + " LIKE '%" + course.getCourseCode().getCode() + "%') AND (" + COLUMN_FACULTY_CODE + " LIKE '%" + course.getCourseCode().getFaculty() + "%')) AND " + COLUMN_COURSE_NAME + " LIKE '%" + course.getCourseName() + "%'";
+                break;
+            case 7:
+                query = "SELECT * FROM " + COURSE_TABLE + " WHERE ((" + COLUMN_DAY_OFFERED_ONE + " = '" + course.getDayOfWeek1().toString() + "') OR (" + COLUMN_DAY_OFFERED_TWO + " = " + course.getDayOfWeek2().toString() + ")) AND ((" + COLUMN_COURSE_CODE + " LIKE '%" + course.getCourseCode().getCode() + "%') AND (" + COLUMN_FACULTY_CODE + " LIKE '%" + course.getCourseCode().getFaculty() + "%')) AND " + COLUMN_COURSE_NAME + " LIKE '%" + course.getCourseName() + "%'";
+                break;
+        }
 
         Cursor cursor = db.rawQuery(query, null);
 
-        if (cursor.moveToFirst()) {
-            return cursor.getInt(0);
+
+        if(cursor.moveToFirst()) {
+            do {
+                int id = cursor.getInt(0);
+                CourseCode courseCode = new CourseCode();
+                courseCode.setFaculty(cursor.getString(1));
+                courseCode.setCode(cursor.getInt(2));
+                String courseName = cursor.getString(3);
+                Course courseFound = read(cursor.getBlob(4));
+                courseFound.setCourseCode(courseCode);
+                courseFound.setCourseName(courseName);
+                courseFound.setId(id);
+                if (cursor.getString(5) != null) {
+                    courseFound.setDayOfWeek1(DayOfWeek.valueOf(cursor.getString(5)));
+                }
+                if (cursor.getString(6) != null) {
+                    courseFound.setDayOfWeek2(DayOfWeek.valueOf(cursor.getString(6)));
+                }
+
+                coursesFound.add(courseFound);
+            } while (cursor.moveToNext());
         }
 
-        return -1;
+        cursor.close();
+        db.close();
+        return coursesFound;
+
+    }
+
+    public List<Course> allCourses() {
+        List<Course> courses = new ArrayList<>();
+
+        String query = "SELECT * FROM " + COURSE_TABLE;
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        Cursor cursor = db.rawQuery(query, null);
+
+        if(cursor.moveToFirst()) {
+            do {
+                Course course = read(cursor.getBlob(4));
+                int id = cursor.getInt(0);
+                course.setId(id);
+                CourseCode courseCode = new CourseCode();
+                courseCode.setFaculty(cursor.getString(1));
+                courseCode.setCode(cursor.getInt(2));
+                String courseName = cursor.getString(3);
+                course.setCourseCode(courseCode);
+                course.setCourseName(courseName);
+                if (cursor.getString(5) != null) {
+                    course.setDayOfWeek1(DayOfWeek.valueOf(cursor.getString(5)));
+                }
+                if (cursor.getString(6) != null) {
+                    course.setDayOfWeek2(DayOfWeek.valueOf(cursor.getString(6)));
+                }
+                courses.add(course);
+            } while (cursor.moveToNext());
+        }
+
+        cursor.close();
+        db.close();
+        return courses;
     }
 
     public Course findCourse(Course course) {
         SQLiteDatabase db = this.getReadableDatabase();
-        String query = "SELECT * FROM " + COURSE_TABLE + " WHERE (" + COLUMN_FACULTY_CODE + " = \'" + course.getCourseCode().getFaculty().toString() + "\') AND (" + COLUMN_COURSE_CODE + " = " + Integer.toString(course.getCourseCode().getCode()) + ")";
+        String query = "SELECT * FROM " + COURSE_TABLE + " WHERE (" + COLUMN_FACULTY_CODE + " = '" + course.getCourseCode().getFaculty() + "') AND (" + COLUMN_COURSE_CODE + " = " + course.getCourseCode().getCode() + ")";
 
         Cursor cursor = db.rawQuery(query, null);
         Course courseToReturn;
@@ -240,12 +320,13 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 courseCode.setFaculty(cursor.getString(1));
                 courseCode.setCode(cursor.getInt(2));
                 courseName = cursor.getString(3);
+
             } while (cursor.moveToNext());
         }
         courseToReturn = new Course(courseCode, courseName);
         courseToReturn.setId(id);
 
-
+        cursor.close();
         return courseToReturn;
 
     }
@@ -254,29 +335,22 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues cv = new ContentValues();
-        cv.put(COLUMN_FACULTY_CODE, newValues.getCourseCode().getFaculty().toString());
+        cv.put(COLUMN_FACULTY_CODE, newValues.getCourseCode().getFaculty());
         cv.put(COLUMN_COURSE_CODE, newValues.getCourseCode().getCode());
         cv.put(COLUMN_COURSE_NAME, newValues.getCourseName());
-
-        if (db.update(COURSE_TABLE, cv, COLUMN_ID + "=?", new String[]{String.valueOf(id)}) == 1) {
-            return true;
-        } else {
-            return false;
+        cv.put(COLUMN_COURSE_OBJECT, makeByte(newValues));
+        if (newValues.getDayOfWeek1() != null) {
+            cv.put(COLUMN_DAY_OFFERED_ONE, newValues.getDayOfWeek1().toString());
         }
+        if (newValues.getDayOfWeek2() != null) {
+            cv.put(COLUMN_DAY_OFFERED_TWO, newValues.getDayOfWeek2().toString());
+        }
+
+        return db.update(COURSE_TABLE, cv, COLUMN_ID + "=?", new String[]{String.valueOf(id)}) == 1;
     }
 
     public boolean deleteCourse(Course course) {
         SQLiteDatabase db = this.getWritableDatabase();
-//        String query = "DELETE FROM " + COURSE_TABLE + " WHERE (" + COLUMN_FACULTY_CODE + " = \'" + course.getCourseCode().getFaculty().toString() + "\') AND (" + COLUMN_COURSE_CODE + " = \'" + Integer.toString(course.getCourseCode().getCode()) + "\')";
-//        Cursor cursor = db.rawQuery(query, null);
-//        int courseId = findCourseID(course);
-//
-//        if (cursor.moveToFirst()) {
-//            return true;
-//        } else {
-//            return false;
-//        }
-
         return db.delete(COURSE_TABLE, COLUMN_ID + "=" + course.getId(), null) > 0;
     }
 }

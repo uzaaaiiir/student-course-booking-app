@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".activities.AdminMainActivity">
+
+    <TextView
+        android:id="@+id/welcome3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
+        android:text="@string/welcome"
+        app:layout_constraintBottom_toTopOf="@+id/buttonsAdminMain"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <LinearLayout
+        android:id="@+id/buttonsAdminMain"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toTopOf="@id/logoutBtnAdminMain"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/welcome3">
+
+        <Button
+            android:id="@+id/createCourseAdminMain"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/createCourseBtn" />
+
+        <Button
+            android:id="@+id/searchBtnAdminMain"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/searchAndManageCourseAdminMain" />
+
+        <Button
+            android:id="@+id/manageInstructorsAdminMain"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/manageInstructors" />
+
+        <Button
+            android:id="@+id/manageStudentsAdminMain"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/manageStudents" />
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/logoutBtnAdminMain"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="32dp"
+        android:text="@string/logout"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/buttonsAdminMain" />
+</androidx.constraintlayout.widget.ConstraintLayout>

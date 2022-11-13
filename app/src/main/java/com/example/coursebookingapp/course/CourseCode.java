@@ -1,6 +1,8 @@
 package com.example.coursebookingapp.course;
 
-public class CourseCode {
+import java.io.Serializable;
+
+public class CourseCode implements Serializable {
     private String faculty;
     private int code;
 

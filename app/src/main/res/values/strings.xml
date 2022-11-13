@@ -21,9 +21,9 @@
     <string name="backBtn">Back</string>
     <string name="searchInstructors">Search Instructors</string>
     <string name="deleteInstructor">Click Row to Delete Instructor</string>
-    <string name="faculty">Faculty (i.e.HIS)</string>
-    <string name="courseName">Course Name</string>
-    <string name="courseCode">Code (i.e.101)</string>
+    <string name="faculty">Enter Faculty (i.e.HIS)</string>
+    <string name="courseName">Enter Course Name</string>
+    <string name="courseCode">Enter Code (i.e.101)</string>
     <string name="createCourseBtn">Create Course</string>
     <string name="searchCourse">Enter Course Code</string>
     <string name="result">Result</string>
@@ -46,9 +46,21 @@
     <string name="createAccount">Create Account</string>
     <string name="signUpInfo">Create an Instructor Account</string>
     <string name="facultyCode">Faculty Code</string>
+    <string name="homeBtn">Home</string>
+    <string name="dayOfWeek">Day of the Week</string>
+    <string name="searchAndManageCourseAdminMain">Search and Manage Courses</string>
+    <string name="searchAndEditCourseInstructorMain">Search and Edit Courses</string>
+    <string name="searchCourses">Search and Enroll in Courses</string>
     <string-array name="roles">
         <item>Administrator</item>
         <item>Instructor</item>
         <item>Student</item>
+    </string-array>
+    <string-array name="daysOfWeek">
+        <item>MONDAY</item>
+        <item>TUESDAY</item>
+        <item>WEDNESDAY</item>
+        <item>THURSDAY</item>
+        <item>FRIDAY</item>
     </string-array>
 </resources>

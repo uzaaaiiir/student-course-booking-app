@@ -12,7 +12,6 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.example.coursebookingapp.user.Administrator;
-import com.example.coursebookingapp.data.DatabaseHandler;
 import com.example.coursebookingapp.R;
 import com.example.coursebookingapp.user.User;
 
@@ -49,7 +48,14 @@ public class LoginActivity extends AppCompatActivity {
                         printMessage("Success. Logging in as " + user.getRole());
                         emptyUsernameAndPasswordFields(username, password);
                         User.setCurrentUser(user);
-                        startNewActivity(MainActivity.class);
+
+                        if (user.isAdministrator()) {
+                            startNewActivity(AdminMainActivity.class);
+                        } else if (user.isInstructor()) {
+                            startNewActivity(InstructorMainActivity.class);
+                        } else if (user.isStudent()) {
+                            startNewActivity(StudentMainActivity.class);
+                        }
                     } else {
                         printMessage(INCORRECT_USERNAME_OR_PASSWORD);
                     }

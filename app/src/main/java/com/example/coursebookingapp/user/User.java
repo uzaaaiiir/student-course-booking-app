@@ -3,6 +3,7 @@ package com.example.coursebookingapp.user;
 import android.content.Context;
 
 import com.example.coursebookingapp.activities.LoginActivity;
+import com.example.coursebookingapp.activities.ManageStudentsActivity;
 import com.example.coursebookingapp.data.DatabaseHandler;
 
 import java.util.List;
@@ -102,6 +103,13 @@ public class User {
     public static List<User> getAllInstructors(Context context, String search) {
         DatabaseHandler databaseHandler = new DatabaseHandler(context);
         List<User> instructorsSearched = databaseHandler.allInstructors(search);
+        databaseHandler.close();
+        return instructorsSearched;
+    }
+
+    public static List<User> getAllStudents(Context context, String search) {
+        DatabaseHandler databaseHandler = new DatabaseHandler(context);
+        List<User> instructorsSearched = databaseHandler.allStudents(search);
         databaseHandler.close();
         return instructorsSearched;
     }

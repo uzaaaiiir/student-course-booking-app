@@ -56,9 +56,7 @@ public class ManageInstructorsActivity extends AppCompatActivity {
 
         back.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
-                startNewActivity(MainActivity.class);
-            }
+            public void onClick(View v) { startNewActivity(AdminMainActivity.class); }
         });
 
         logout.setOnClickListener(new View.OnClickListener() {
