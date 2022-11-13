@@ -51,12 +51,20 @@
     <string name="searchAndManageCourseAdminMain">Search and Manage Courses</string>
     <string name="searchAndEditCourseInstructorMain">Search and Edit Courses</string>
     <string name="searchCourses">Search and Enroll in Courses</string>
+    <string name="CourseCodeInstructorManage">"Course Code "</string>
+    <string name="startTime">Start Time</string>
+    <string name="durationOfLecture">Enter duration of Lecture (hrs)</string>
+    <string name="courseCapacity">Enter Course Capacity</string>
+    <string name="courseDescriptionInstructorManage">Course Description</string>
+    <string name="assignToSelf">Assign as Instructor</string>
+    <string name="saveBtnInstructorManage">Save Changes</string>
     <string-array name="roles">
         <item>Administrator</item>
         <item>Instructor</item>
         <item>Student</item>
     </string-array>
     <string-array name="daysOfWeek">
+        <item></item>
         <item>MONDAY</item>
         <item>TUESDAY</item>
         <item>WEDNESDAY</item>
