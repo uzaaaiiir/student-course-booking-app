@@ -120,4 +120,11 @@ public class User {
         databaseHandler.close();
         return deleted;
     }
+
+    public boolean userExists(Context context) {
+        DatabaseHandler databaseHandler = new DatabaseHandler(context);
+        boolean exists = databaseHandler.userExists(this);
+        databaseHandler.close();
+        return exists;
+    }
 }
