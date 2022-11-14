@@ -3,6 +3,9 @@ package com.example.coursebookingapp.course;
 import java.io.Serializable;
 
 public class CourseCode implements Serializable {
+
+    private static final long serialVersionUID = 6529685098267757691L;
+
     private String faculty;
     private int code;
 

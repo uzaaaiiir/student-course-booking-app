@@ -41,7 +41,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
     public DatabaseHandler(@Nullable Context context) {
 
-        super(context, "course.db", null, 6);
+        super(context, "course.db", null, 7);
     }
 
     @Override
@@ -253,11 +253,13 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 courseFound.setCourseCode(courseCode);
                 courseFound.setCourseName(courseName);
                 courseFound.setId(id);
-                if (cursor.getString(5) != null) {
-                    courseFound.setDayOfWeek1(DayOfWeek.valueOf(cursor.getString(5)));
+                String day1 = cursor.getString(5);
+                String day2 = cursor.getString(6);
+                if (day1 != null) {
+                    courseFound.setDayOfWeek1(DayOfWeek.valueOf(day1));
                 }
-                if (cursor.getString(6) != null) {
-                    courseFound.setDayOfWeek2(DayOfWeek.valueOf(cursor.getString(6)));
+                if (day2 != null) {
+                    courseFound.setDayOfWeek2(DayOfWeek.valueOf(day2));
                 }
 
                 coursesFound.add(courseFound);
@@ -339,12 +341,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         cv.put(COLUMN_COURSE_CODE, newValues.getCourseCode().getCode());
         cv.put(COLUMN_COURSE_NAME, newValues.getCourseName());
         cv.put(COLUMN_COURSE_OBJECT, makeByte(newValues));
-        if (newValues.getDayOfWeek1() != null) {
-            cv.put(COLUMN_DAY_OFFERED_ONE, newValues.getDayOfWeek1().toString());
-        }
-        if (newValues.getDayOfWeek2() != null) {
-            cv.put(COLUMN_DAY_OFFERED_TWO, newValues.getDayOfWeek2().toString());
-        }
+        cv.put(COLUMN_DAY_OFFERED_ONE, newValues.getDayOfWeek1() != null ? newValues.getDayOfWeek1().toString() : null);
+        cv.put(COLUMN_DAY_OFFERED_TWO, newValues.getDayOfWeek2() != null ? newValues.getDayOfWeek2().toString() : null);
 
         return db.update(COURSE_TABLE, cv, COLUMN_ID + "=?", new String[]{String.valueOf(id)}) == 1;
     }

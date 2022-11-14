@@ -55,7 +55,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:minHeight="32dp" />
+                android:minHeight="32dp"
+                tools:ignore="SpeakableTextPresentCheck,TouchTargetSizeCheck" />
 
             <EditText
                 android:id="@+id/day1StartTime"
@@ -64,7 +65,8 @@
                 android:layout_weight="1"
                 android:ems="10"
                 android:hint="@string/startTime"
-                android:inputType="time" />
+                android:inputType="time"
+                tools:ignore="TouchTargetSizeCheck" />
         </LinearLayout>
 
         <LinearLayout
@@ -76,7 +78,8 @@
                 android:id="@+id/day2Dropdown"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1" />
+                android:layout_weight="1"
+                tools:ignore="TouchTargetSizeCheck,SpeakableTextPresentCheck" />
 
             <EditText
                 android:id="@+id/day2StartTIme"
@@ -85,7 +88,8 @@
                 android:layout_weight="1"
                 android:ems="10"
                 android:hint="@string/startTime"
-                android:inputType="time" />
+                android:inputType="time"
+                tools:ignore="TouchTargetSizeCheck" />
         </LinearLayout>
 
         <EditText
@@ -94,7 +98,8 @@
             android:layout_height="wrap_content"
             android:ems="10"
             android:hint="@string/durationOfLecture"
-            android:inputType="number" />
+            android:inputType="number"
+            android:minHeight="48dp" />
 
         <EditText
             android:id="@+id/courseCapacity"
@@ -102,7 +107,8 @@
             android:layout_height="wrap_content"
             android:ems="10"
             android:hint="@string/courseCapacity"
-            android:inputType="number" />
+            android:inputType="number"
+            android:minHeight="48dp" />
 
         <EditText
             android:id="@+id/courseDescription"
@@ -111,19 +117,21 @@
             android:ems="10"
             android:gravity="start|top"
             android:hint="@string/courseDescriptionInstructorManage"
-            android:inputType="textMultiLine" />
-
-        <Switch
-            android:id="@+id/assignToSelf"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/assignToSelf" />
+            android:inputType="textMultiLine"
+            android:minHeight="48dp" />
 
         <Button
             android:id="@+id/saveBtnInstructorManage"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/saveBtnInstructorManage" />
+
+        <Switch
+            android:id="@+id/assignToSelf"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="48dp"
+            android:text="@string/assignToSelf" />
     </LinearLayout>
 
     <View

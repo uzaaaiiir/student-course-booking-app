@@ -11,24 +11,27 @@ import java.io.Serializable;
 import java.sql.Time;
 import java.time.DayOfWeek;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class Course implements Serializable {
+
+    private static final long serialVersionUID = 6529685098267757690L;
 
     private int id;
     private static Course selectedCourse;
     private CourseCode courseCode;
     private String courseName;
-    private Instructor courseInstructor;
+    private String instructorUsername;
     private List<Student> studentsEnrolled;
 
     // New Fields
     private DayOfWeek dayOfWeek1;
     private DayOfWeek dayOfWeek2;
-    private Time startTime1;
-    private Time startTime2;
-    private int duration;
-    private int courseCapacity;
+    private Date startTime1;
+    private Date startTime2;
+    private int duration = 0;
+    private int courseCapacity = 0;
     private String courseDescription;
 
     public Course() {}
@@ -60,17 +63,17 @@ public class Course implements Serializable {
         this.id = id;
     }
 
-    public Instructor getCourseInstructor() { return courseInstructor; }
-    public void setCourseInstructor(Instructor courseInstructor) { this.courseInstructor = courseInstructor; }
+    public String getCourseInstructor() { return instructorUsername; }
+    public void setCourseInstructor(String instructorUsername) { this.instructorUsername = instructorUsername; }
 
     public DayOfWeek getDayOfWeek1() { return dayOfWeek1; }
     public void setDayOfWeek1(DayOfWeek dayOfWeek1) { this.dayOfWeek1 = dayOfWeek1; }
     public DayOfWeek getDayOfWeek2() { return dayOfWeek2; }
     public void setDayOfWeek2(DayOfWeek dayOfWeek2) { this.dayOfWeek2 = dayOfWeek2; }
-    public Time getStartTime1() { return startTime1; }
-    public void setStartTime1(Time startTime1) { this.startTime1 = startTime1; }
-    public Time getStartTime2() { return startTime2; }
-    public void setStartTime2(Time startTime2) { this.startTime2 = startTime2; }
+    public Date getStartTime1() { return startTime1; }
+    public void setStartTime1(Date startTime1) { this.startTime1 = startTime1; }
+    public Date getStartTime2() { return startTime2; }
+    public void setStartTime2(Date startTime2) { this.startTime2 = startTime2; }
     public int getDuration() { return duration; }
     public void setDuration(int duration) { this.duration = duration; }
     public int getCourseCapacity() { return courseCapacity; }
@@ -87,6 +90,17 @@ public class Course implements Serializable {
         if (dbHandler.addCourse(this)) { return true; }
         dbHandler.close();
         return false;
+    }
+
+    public void emptyAllFields() {
+        Course.getSelectedCourse().setCourseInstructor(null);
+        Course.getSelectedCourse().setDayOfWeek1(null);
+        Course.getSelectedCourse().setDayOfWeek2(null);
+        Course.getSelectedCourse().setStartTime1(null);
+        Course.getSelectedCourse().setStartTime2(null);
+        Course.getSelectedCourse().setDuration(0);
+        Course.getSelectedCourse().setCourseCapacity(0);
+        Course.getSelectedCourse().setCourseDescription(null);
     }
 
 

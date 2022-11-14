@@ -34,22 +34,24 @@ public class CreateCourseActivity extends AppCompatActivity {
         createCourse.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                DatabaseHandler dbHandler = new DatabaseHandler(CreateCourseActivity.this);
                 Course course;
 
                 try {
-                    CourseCode courseCode = new CourseCode(faculty.getText().toString(), Integer.parseInt(code.getText().toString()));
-                    course = new Course(courseCode, courseName.getText().toString());
-                    if (course.addCourse(CreateCourseActivity.this)){
-                        printMessage("Course successfully added: " + course);
+                    if (faculty.getText().toString().trim().length() == 0 || code.getText().toString().trim().length() == 0 || courseName.getText().toString().trim().length() == 0){
+                        printMessage("Fill out all the fields.");
                     } else {
-                        printMessage("Course already exists: " + course);
+                        CourseCode courseCode = new CourseCode(faculty.getText().toString().toUpperCase(), Integer.parseInt(code.getText().toString()));
+                        course = new Course(courseCode, courseName.getText().toString());
+                        if (course.addCourse(CreateCourseActivity.this)){
+                            printMessage("Course successfully added: " + course);
+                        } else {
+                            printMessage("Course already exists: " + course);
+                        }
+                        emptyFields();
                     }
-                    emptyFields();
-
                 } catch (Exception e) {
                     e.printStackTrace();
-                    printMessage("Unable to create course. Fill faculty code, course code, and course name.");
+                    printMessage("Unable to create course. Fill faculty code and course code.");
                 }
             }
         });

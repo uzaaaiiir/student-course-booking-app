@@ -111,6 +111,8 @@ public class SearchCoursesActivity extends AppCompatActivity {
                     startNewActivity(ManageCourseActivity.class);
                 } else if (User.getCurrentUser().isInstructor()) {
                     // Update Code with Instructor Information
+                    clearAll();
+                    startNewActivity(InstructorManageCourseActivity.class);
                 }
             }
         });
@@ -136,6 +138,7 @@ public class SearchCoursesActivity extends AppCompatActivity {
         viewAll.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                clearAll();
                 List<Course> allCourses = Course.findAllCourses(SearchCoursesActivity.this);
                 updateListView(allCourses);
             }
