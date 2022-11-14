@@ -89,11 +89,12 @@ public class InstructorManageCourseActivity extends AppCompatActivity {
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 if (day1.getSelectedItem().toString().trim().length() == 0) {
                     time1.setEnabled(false);
+                } else if (day1.getSelectedItem().toString().trim().length() != 0 && !userIsInstructor()){
+                    time1.setEnabled(false);
                 } else {
                     time1.setEnabled(true);
                 }
 
-                managePermissions();
             }
 
             @Override
@@ -107,11 +108,12 @@ public class InstructorManageCourseActivity extends AppCompatActivity {
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 if (day2.getSelectedItem().toString().trim().length() == 0) {
                     time2.setEnabled(false);
+                } else if (day2.getSelectedItem().toString().trim().length() != 0 && !userIsInstructor()){
+                    time2.setEnabled(false);
                 } else {
                     time2.setEnabled(true);
                 }
 
-                managePermissions();
             }
 
             @Override
@@ -236,7 +238,7 @@ public class InstructorManageCourseActivity extends AppCompatActivity {
             disableToggle();
             assign.setChecked(false);
             disableBtn();
-            assign.setText("Course already assigned.");
+            assign.setText("Course already assigned to " + Course.getSelectedCourse().getCourseInstructor() + ".");
         }
 
     }
