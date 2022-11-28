@@ -4,16 +4,25 @@ import android.content.Context;
 
 import com.example.coursebookingapp.activities.LoginActivity;
 import com.example.coursebookingapp.activities.ManageStudentsActivity;
+import com.example.coursebookingapp.course.Course;
 import com.example.coursebookingapp.data.DatabaseHandler;
 
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
-public class User {
+public class User implements Serializable {
+    private static final long serialVersionUID = 6529685098267757692L;
+
     private static User currentUser;
     private int id;
     private String username;
     private String password;
     private String role;
+    private List<Course> coursesTeaching = new ArrayList<>();
+    public List<Course> enrolledCourses = new ArrayList<>();
 
     public User() {
     }
@@ -82,6 +91,70 @@ public class User {
         return getRole() + ": " + getUsername();
     }
 
+    public boolean enrolInCourse(Course course) {
+        if (canEnrol(course)) {
+            enrolledCourses.add(course);
+            return true;
+        }
+        return false;
+    }
+
+    public boolean canEnrol(Course course) {
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(course.getStartTime1());
+        cal.add(Calendar.HOUR_OF_DAY, course.getDuration());
+        Date enrollingCourseEndTime1 = cal.getTime();
+
+        cal.setTime(course.getStartTime2());
+        cal.add(Calendar.HOUR_OF_DAY, course.getDuration());
+        Date enrollingCourseEndTime2 = cal.getTime();
+        for (Course enrolledCourse : enrolledCourses) {
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(enrolledCourse.getStartTime1());
+            calendar.add(Calendar.HOUR_OF_DAY, enrolledCourse.getDuration());
+            Date endTime1 = calendar.getTime();
+
+            calendar.setTime(enrolledCourse.getStartTime2());
+            calendar.add(Calendar.HOUR_OF_DAY, enrolledCourse.getDuration());
+            Date endTime2 = calendar.getTime();
+
+            if (enrolledCourse.getDayOfWeek1().equals(course.getDayOfWeek1())) {
+                if ((course.getStartTime1().after(enrolledCourse.getStartTime1()) && course.getStartTime1().before(endTime1))
+                || (enrollingCourseEndTime1.after(enrolledCourse.getStartTime1()) && enrollingCourseEndTime1.before(endTime1))) {
+                    return false;
+                }
+            } else if (enrolledCourse.getDayOfWeek1().equals(course.getDayOfWeek2())) {
+                if ((course.getStartTime2().after(enrolledCourse.getStartTime1()) && course.getStartTime2().before(endTime1))
+                        || (enrollingCourseEndTime2.after(enrolledCourse.getStartTime1()) && enrollingCourseEndTime2.before(endTime1))) {
+                    return false;
+                }
+            } else if (enrolledCourse.getDayOfWeek2().equals(course.getDayOfWeek1())) {
+                if ((course.getStartTime1().after(enrolledCourse.getStartTime2()) && course.getStartTime1().before(endTime2))
+                        || (enrollingCourseEndTime1.after(enrolledCourse.getStartTime2()) && enrollingCourseEndTime1.before(endTime2))) {
+                    return false;
+                }
+            } else if (enrolledCourse.getDayOfWeek2().equals(course.getDayOfWeek2())) {
+                if ((course.getStartTime2().after(enrolledCourse.getStartTime2()) && course.getStartTime2().before(endTime2))
+                        || (enrollingCourseEndTime2.after(enrolledCourse.getStartTime2()) && enrollingCourseEndTime2.before(endTime2))) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    public boolean unenrolFromCourse(Course course) {
+        return enrolledCourses.remove(course);
+    }
+
+    public boolean isEnrolled(Course course) {
+        return enrolledCourses.contains(course);
+    }
+
+    public boolean addCourseTaught(Course course) {
+        return coursesTeaching.add(course);
+    }
+
     public boolean checkIfUserExists(Context context) {
         DatabaseHandler databaseHandler = new DatabaseHandler(context);
         if (databaseHandler.userExists(this)) {
@@ -91,6 +164,11 @@ public class User {
 
         databaseHandler.close();
         return false;
+    }
+
+    public boolean updateUser(Context context) {
+        DatabaseHandler databaseHandler = new DatabaseHandler(context);
+        return databaseHandler.updateUser(this);
     }
 
     public boolean addUser(Context context) {

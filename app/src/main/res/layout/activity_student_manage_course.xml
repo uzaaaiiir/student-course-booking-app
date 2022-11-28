@@ -2,10 +2,9 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/day2StartTime"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".activities.InstructorManageCourseActivity">
+    tools:context=".activities.StudentManageCourseActivity">
 
     <LinearLayout
         android:id="@+id/courseIntroInstructorManage"
@@ -124,20 +123,14 @@
             android:id="@+id/saveChangesInstructor"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/saveBtnInstructorManage" />
+            android:text="@string/enrolBtn" />
 
         <Button
-            android:id="@+id/viewEnrolledStudents"
+            android:id="@+id/unenrolBtnStudentCourse"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/viewEnrolledStudents" />
+            android:text="@string/unenrolBtn" />
 
-        <Switch
-            android:id="@+id/assignToSelf"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:minHeight="48dp"
-            android:text="@string/assignToSelf" />
     </LinearLayout>
 
     <View

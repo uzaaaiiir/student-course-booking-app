@@ -113,6 +113,10 @@ public class SearchCoursesActivity extends AppCompatActivity {
                     // Update Code with Instructor Information
                     clearAll();
                     startNewActivity(InstructorManageCourseActivity.class);
+                } else if (User.getCurrentUser().isStudent()) {
+                    clearAll();
+                    // Open Activity for User enrolling in course
+                    startNewActivity(StudentManageCourseActivity.class);
                 }
             }
         });

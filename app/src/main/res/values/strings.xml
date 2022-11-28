@@ -58,6 +58,9 @@
     <string name="courseDescriptionInstructorManage">Course Description</string>
     <string name="assignToSelf">Assign as Instructor</string>
     <string name="saveBtnInstructorManage">Save Changes</string>
+    <string name="enrolBtn">Enrol in Course</string>
+    <string name="unenrolBtn">Unenroll from Course</string>
+    <string name="viewEnrolledStudents">View Enrolled Students</string>
     <string-array name="roles">
         <item>Administrator</item>
         <item>Instructor</item>

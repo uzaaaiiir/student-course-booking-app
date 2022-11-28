@@ -8,7 +8,6 @@ public class Instructor extends User {
     public static final String INSTRUCTOR = "Instructor";
     private List<Course> coursesTeaching;
 
-
     public Instructor(int id, String username, String password) {
         super(id, username, password, INSTRUCTOR);
     }

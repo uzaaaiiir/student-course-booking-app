@@ -22,12 +22,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DatabaseHandler extends SQLiteOpenHelper {
+    // USER TABLE
     public static final String USER_TABLE = "USER_TABLE";
     public static final String COLUMN_ID = "ID";
     public static final String COLUMN_USERNAME = "USERNAME";
     public static final String COLUMN_PASSWORD = "PASSWORD";
     public static final String COLUMN_ROLE = "ROLE";
+    public static final String COLUMN_USER_OBJECT = "USER_OBJECT";
 
+    // COURSE TABLE
     public static final String COURSE_TABLE = "COURSE_TABLE";
     public static final String COLUMN_COURSE_CODE = "COURSE_CODE";
     public static final String COLUMN_COURSE_NAME = "COURSE_NAME";
@@ -41,12 +44,12 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
     public DatabaseHandler(@Nullable Context context) {
 
-        super(context, "course.db", null, 7);
+        super(context, "course.db", null, 8);
     }
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        String createUserTable = "CREATE TABLE " + USER_TABLE + " (" + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " + COLUMN_USERNAME + " TEXT, " + COLUMN_PASSWORD + " TEXT, " + COLUMN_ROLE + " TEXT)";
+        String createUserTable = "CREATE TABLE " + USER_TABLE + " (" + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " + COLUMN_USERNAME + " TEXT, " + COLUMN_PASSWORD + " TEXT, " + COLUMN_ROLE + " TEXT, " + COLUMN_USER_OBJECT + " BLOB)";
         String createCourseTable = "CREATE TABLE " + COURSE_TABLE + " (" + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " + COLUMN_FACULTY_CODE + " TEXT, " + COLUMN_COURSE_CODE + " INTEGER, " + COLUMN_COURSE_NAME + " TEXT, " + COLUMN_COURSE_OBJECT + " BLOB, " + COLUMN_DAY_OFFERED_ONE + " TEXT, " + COLUMN_DAY_OFFERED_TWO  + " TEXT)";
 
         db.execSQL(createUserTable);
@@ -89,10 +92,12 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     public byte[] makeByte(Course course) {
         return SerializationUtils.serialize(course);
     }
+    public byte[] makeUserByte(User user) { return SerializationUtils.serialize(user); }
 
     public Course read(byte[] data) {
         return SerializationUtils.deserialize(data);
     }
+    public User readUser(byte[] data) { return SerializationUtils.deserialize(data); }
 
     public boolean addUser(User user) {
         SQLiteDatabase db = this.getWritableDatabase();
@@ -182,6 +187,17 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             cursor.close();
             return false;
         }
+    }
+
+    public boolean updateUser(User updateUser) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues cv = new ContentValues();
+        cv.put(COLUMN_USERNAME, updateUser.getUsername());
+        cv.put(COLUMN_PASSWORD, updateUser.getPassword());
+        cv.put(COLUMN_USER_OBJECT, makeUserByte(updateUser));
+
+        return db.update(USER_TABLE, cv, COLUMN_USERNAME + "=?", new String[]{String.valueOf(updateUser.getUsername())}) == 1;
     }
 
     // COURSES

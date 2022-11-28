@@ -6,6 +6,7 @@ import com.example.coursebookingapp.activities.SearchCoursesActivity;
 import com.example.coursebookingapp.data.DatabaseHandler;
 import com.example.coursebookingapp.user.Instructor;
 import com.example.coursebookingapp.user.Student;
+import com.example.coursebookingapp.user.User;
 
 import java.io.Serializable;
 import java.sql.Time;
@@ -23,7 +24,12 @@ public class Course implements Serializable {
     private CourseCode courseCode;
     private String courseName;
     private String instructorUsername;
-    private List<Student> studentsEnrolled;
+
+    private List<User> studentsEnrolled;
+    public boolean addEnrolledStudent(User user) { return studentsEnrolled.add(user); }
+    public boolean removeEnrolledStudent(User user) { return studentsEnrolled.remove(user); }
+    public List<User> getEnrolledStudents() { return studentsEnrolled; }
+
 
     // New Fields
     private DayOfWeek dayOfWeek1;

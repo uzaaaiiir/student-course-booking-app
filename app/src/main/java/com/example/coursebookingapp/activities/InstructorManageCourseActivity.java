@@ -4,7 +4,6 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -18,7 +17,6 @@ import android.widget.Toast;
 
 import com.example.coursebookingapp.R;
 import com.example.coursebookingapp.course.Course;
-import com.example.coursebookingapp.user.Instructor;
 import com.example.coursebookingapp.user.User;
 
 import java.text.DateFormat;
@@ -28,7 +26,7 @@ import java.time.DayOfWeek;
 import java.util.Date;
 
 public class InstructorManageCourseActivity extends AppCompatActivity {
-    Button save, logout, home, back;
+    Button save, logout, home, back, viewStudents;
     EditText time1, time2, duration, capacity, description;
     Spinner day1, day2;
     Switch assign;
@@ -51,8 +49,10 @@ public class InstructorManageCourseActivity extends AppCompatActivity {
                 if (assign.isChecked()) {
                     Course.getSelectedCourse().setCourseInstructor(User.getCurrentUser().getUsername());
                     printMessage(Course.getSelectedCourse().updateCourse(InstructorManageCourseActivity.this) ? "Assigned as Instructor." : "Unable to assign as Instructor.");
+                    viewStudents.setEnabled(true);
                 } else {
                     Course.getSelectedCourse().emptyAllFields();
+                    viewStudents.setEnabled(false);
                     if (Course.getSelectedCourse().updateCourse(InstructorManageCourseActivity.this)) {
                         emptyAllUIFields();
                         printMessage("Unassigned as Instructor.");
@@ -62,6 +62,13 @@ public class InstructorManageCourseActivity extends AppCompatActivity {
                     }
                 }
                 managePermissions();
+            }
+        });
+
+        viewStudents.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startNewActivity(ViewEnrolledStudentsActivity.class);
             }
         });
 
@@ -176,10 +183,6 @@ public class InstructorManageCourseActivity extends AppCompatActivity {
         if (Course.getSelectedCourse().getCourseDescription() != null) {
             description.setText(Course.getSelectedCourse().getCourseDescription());
         }
-
-
-
-
     }
 
     private void setUIValuesToCourse() throws ParseException {
@@ -293,7 +296,7 @@ public class InstructorManageCourseActivity extends AppCompatActivity {
     }
 
     private void assignInputs() {
-        save = findViewById(R.id.saveBtnInstructorManage);
+        save = findViewById(R.id.saveChangesInstructor);
         logout = findViewById(R.id.logoutInstructorManage);
         home = findViewById(R.id.homeBtnInstructorManage);
         back = findViewById(R.id.backBtnInstructorManage);
@@ -307,6 +310,7 @@ public class InstructorManageCourseActivity extends AppCompatActivity {
         courseCode = findViewById(R.id.courseCodeInstructorManageCourse);
         courseName = findViewById(R.id.courseNameIntructorManage);
         assign = findViewById(R.id.assignToSelf);
+        viewStudents = findViewById(R.id.viewEnrolledStudents);
     }
 
     private void setCourseCodeAndCourseNameUI() {
