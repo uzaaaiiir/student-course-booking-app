@@ -229,11 +229,13 @@ public class InstructorManageCourseActivity extends AppCompatActivity {
             enableToggle();
             disableInputs();
             disableBtn();
+            viewStudents.setEnabled(false);
             assign.setChecked(false);
         } else if (userIsInstructor()) {
             enableInputs();
             enableToggle();
             enableBtn();
+            viewStudents.setEnabled(true);
             assign.setChecked(true);
             assign.setText("You are the Instructor.");
         } else if (!userIsInstructor()) {
@@ -241,6 +243,7 @@ public class InstructorManageCourseActivity extends AppCompatActivity {
             disableToggle();
             assign.setChecked(false);
             disableBtn();
+            viewStudents.setEnabled(false);
             assign.setText("Course already assigned to " + Course.getSelectedCourse().getCourseInstructor() + ".");
         }
 

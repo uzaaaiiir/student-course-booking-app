@@ -42,11 +42,16 @@ public class StudentManageCourseActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (User.getCurrentUser().canEnrol(Course.getSelectedCourse())) {
-                    User.getCurrentUser().enrolInCourse(Course.getSelectedCourse());
-                    Course.getSelectedCourse().addEnrolledStudent(User.getCurrentUser());
-                    User.getCurrentUser().updateUser(StudentManageCourseActivity.this);
-                    Course.getSelectedCourse().updateCourse(StudentManageCourseActivity.this);
-                    toggleButtons();
+                    User user = User.getCurrentUser().getUser(StudentManageCourseActivity.this).get(0);
+                    user.enrolInCourse(Course.getSelectedCourse());
+
+                    Course course = Course.getSelectedCourse().searchForCourses(StudentManageCourseActivity.this, 6).get(0);
+                    course.addEnrolledStudent(User.getCurrentUser());
+
+                    user.updateUser(StudentManageCourseActivity.this);
+                    course.updateCourse(StudentManageCourseActivity.this);
+                    enrol.setEnabled(false);
+                    unenrol.setEnabled(true);
                 } else {
                     printMessage("Time Conflict in Course.");
                 }
@@ -56,11 +61,17 @@ public class StudentManageCourseActivity extends AppCompatActivity {
         unenrol.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                User.getCurrentUser().unenrolFromCourse(Course.getSelectedCourse());
-                Course.getSelectedCourse().removeEnrolledStudent(User.getCurrentUser());
-                User.getCurrentUser().updateUser(StudentManageCourseActivity.this);
-                Course.getSelectedCourse().updateCourse(StudentManageCourseActivity.this);
-                toggleButtons();
+                User user = User.getCurrentUser().getUser(StudentManageCourseActivity.this).get(0);
+                user.unenrolFromCourse(Course.getSelectedCourse());
+
+                Course course = Course.getSelectedCourse().searchForCourses(StudentManageCourseActivity.this, 6).get(0);
+                course.removeEnrolledStudent(User.getCurrentUser());
+
+                user.updateUser(StudentManageCourseActivity.this);
+                course.updateCourse(StudentManageCourseActivity.this);
+                enrol.setEnabled(true);
+                unenrol.setEnabled(false);
+
             }
         });
 
@@ -176,7 +187,8 @@ public class StudentManageCourseActivity extends AppCompatActivity {
     }
 
     private void toggleButtons() {
-        if (User.getCurrentUser().isEnrolled(Course.getSelectedCourse())) {
+        User user = User.getCurrentUser().getUser(StudentManageCourseActivity.this).get(0);
+        if (user.isEnrolled(Course.getSelectedCourse())) {
             enrol.setEnabled(false);
             unenrol.setEnabled(true);
         } else {

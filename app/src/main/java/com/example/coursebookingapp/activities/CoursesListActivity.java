@@ -16,20 +16,20 @@ import com.example.coursebookingapp.user.User;
 
 import java.util.List;
 
-public class ViewEnrolledStudentsActivity extends AppCompatActivity {
+public class CoursesListActivity extends AppCompatActivity {
     ListView list;
-    ArrayAdapter enrolledStudentsArrayAdapter;
+    ArrayAdapter enrolledCoursesArrayAdapter;
     Button back, home, logout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_view_enrolled_students);
+        setContentView(R.layout.activity_courses_list);
 
         assignInputs();
-        Course course = Course.getSelectedCourse().searchForCourses(ViewEnrolledStudentsActivity.this, 6).get(0);
-        List<User> studentsEnrolled = course.getEnrolledStudents();
-        updateListView(studentsEnrolled);
+        User user = User.getCurrentUser().getUser(CoursesListActivity.this).get(0);
+        List<Course> coursesEnrolled = user.getEnrolledCourses();
+        updateListView(coursesEnrolled);
 
         logout.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -41,36 +41,36 @@ public class ViewEnrolledStudentsActivity extends AppCompatActivity {
         home.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startNewActivity(InstructorMainActivity.class);
+                startNewActivity(StudentMainActivity.class);
             }
         });
 
         back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startNewActivity(InstructorManageCourseActivity.class);
+                startNewActivity(StudentMainActivity.class);
             }
         });
     }
 
     private void startNewActivity(Class activityToStart) {
-        Intent activity = new Intent(ViewEnrolledStudentsActivity.this, activityToStart);
+        Intent activity = new Intent(CoursesListActivity.this, activityToStart);
         startActivity(activity);
     }
 
     private void printMessage(String message) {
-        Toast.makeText(ViewEnrolledStudentsActivity.this, message, Toast.LENGTH_SHORT).show();
+        Toast.makeText(CoursesListActivity.this, message, Toast.LENGTH_SHORT).show();
     }
 
     private void assignInputs() {
-        back = findViewById(R.id.backBtnViewEnrolledStudents);
-        home = findViewById(R.id.homeBtnViewEnrolledStudents);
-        logout = findViewById(R.id.logoutBtnViewEnrolledStudents);
-        list = findViewById(R.id.listOfStudentsEnrolled);
+        back = findViewById(R.id.backBtnViewCourses);
+        home = findViewById(R.id.homeBtnViewCourses);
+        logout = findViewById(R.id.logoutBtnViewCourses);
+        list = findViewById(R.id.listOfCoursesEnrolled);
     }
 
-    private void updateListView(List<User> studentsEnrolled) {
-        enrolledStudentsArrayAdapter = new ArrayAdapter<User>(ViewEnrolledStudentsActivity.this, android.R.layout.simple_list_item_1, studentsEnrolled);
-        list.setAdapter(enrolledStudentsArrayAdapter);
+    private void updateListView(List<Course> coursesEnrolled) {
+        enrolledCoursesArrayAdapter = new ArrayAdapter<>(CoursesListActivity.this, android.R.layout.simple_list_item_1, coursesEnrolled);
+        list.setAdapter(enrolledCoursesArrayAdapter);
     }
 }

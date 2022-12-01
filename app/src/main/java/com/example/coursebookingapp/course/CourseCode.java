@@ -1,6 +1,7 @@
 package com.example.coursebookingapp.course;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 public class CourseCode implements Serializable {
 
@@ -36,4 +37,13 @@ public class CourseCode implements Serializable {
     public String toString() {
         return faculty + code;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        CourseCode that = (CourseCode) o;
+        return code == that.code && this.getFaculty().equals(that.getFaculty());
+    }
+
 }

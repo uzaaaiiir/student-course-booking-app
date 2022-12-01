@@ -17,6 +17,7 @@ import com.example.coursebookingapp.user.User;
 
 import org.apache.commons.lang3.SerializationUtils;
 
+import java.io.Serializable;
 import java.time.DayOfWeek;
 import java.util.ArrayList;
 import java.util.List;
@@ -44,7 +45,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
     public DatabaseHandler(@Nullable Context context) {
 
-        super(context, "course.db", null, 8);
+        super(context, "course.db", null, 12);
     }
 
     @Override
@@ -106,6 +107,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         cv.put(COLUMN_USERNAME, user.getUsername());
         cv.put(COLUMN_PASSWORD, user.getPassword());
         cv.put(COLUMN_ROLE, user.getRole());
+        cv.put(COLUMN_USER_OBJECT, makeUserByte(user));
 
         long insert = db.insert(USER_TABLE, null, cv);
 
@@ -124,6 +126,33 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         }
         cursor.close();
         return false;
+    }
+
+    public List<User> getUser(User user) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "SELECT * FROM " + USER_TABLE + " WHERE (" + COLUMN_USERNAME + " = '" + user.getUsername() + "') AND (" + COLUMN_PASSWORD + " = '" + user.getPassword() + "') AND (" + COLUMN_ROLE + " = '" + user.getRole() + "')";
+
+        Cursor cursor = db.rawQuery(query, null);
+        List<User> users = new ArrayList<>();
+
+        if(cursor.moveToFirst()) {
+            do {
+                int userID = cursor.getInt(0);
+                String username = cursor.getString(1);
+                String password = cursor.getString(2);
+                User userFound = readUser(cursor.getBlob(4));
+
+                userFound.setId(userID);
+                userFound.setUsername(username);
+                userFound.setPassword(password);
+                users.add(userFound);
+            } while (cursor.moveToNext());
+        }
+
+        cursor.close();
+        db.close();
+
+        return users;
     }
 
     public List<User> allStudents(String search) {
@@ -195,10 +224,13 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         ContentValues cv = new ContentValues();
         cv.put(COLUMN_USERNAME, updateUser.getUsername());
         cv.put(COLUMN_PASSWORD, updateUser.getPassword());
-        cv.put(COLUMN_USER_OBJECT, makeUserByte(updateUser));
+        cv.put((COLUMN_USER_OBJECT), makeUserByte(updateUser));
 
         return db.update(USER_TABLE, cv, COLUMN_USERNAME + "=?", new String[]{String.valueOf(updateUser.getUsername())}) == 1;
     }
+
+
+
 
     // COURSES
 
@@ -233,25 +265,25 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
         switch(searchOption) {
             case 1:
-                query = "SELECT * FROM " + COURSE_TABLE + " WHERE (" + COLUMN_DAY_OFFERED_ONE + " = '" + course.getDayOfWeek1().toString() + "') OR (" + COLUMN_DAY_OFFERED_TWO + " = " + course.getDayOfWeek2().toString() + ")";
+                query = "SELECT * FROM " + COURSE_TABLE + " WHERE (" + COLUMN_DAY_OFFERED_ONE + " = '" + course.getDayOfWeek1().toString() + "') OR (" + COLUMN_DAY_OFFERED_TWO + " = '" + course.getDayOfWeek1().toString() + "')";
                 break;
             case 2:
                 query = "SELECT * FROM " + COURSE_TABLE + " WHERE (" + COLUMN_COURSE_NAME + " LIKE '%" + course.getCourseName() + "%')";
                 break;
             case 3:
-                query = "SELECT * FROM " + COURSE_TABLE + " WHERE ((" + COLUMN_DAY_OFFERED_ONE + " = '" + course.getDayOfWeek1().toString() + "') OR (" + COLUMN_DAY_OFFERED_TWO + " = " + course.getDayOfWeek2().toString() + ")) AND (" + COLUMN_COURSE_NAME + " LIKE '%" + course.getCourseName() + "%')";
+                query = "SELECT * FROM " + COURSE_TABLE + " WHERE ((" + COLUMN_DAY_OFFERED_ONE + " = '" + course.getDayOfWeek1().toString() + "') OR (" + COLUMN_DAY_OFFERED_TWO + " = " + course.getDayOfWeek1().toString() + ")) AND (" + COLUMN_COURSE_NAME + " LIKE '%" + course.getCourseName() + "%')";
                 break;
             case 4:
                 query = "SELECT * FROM " + COURSE_TABLE + " WHERE ((" + COLUMN_COURSE_CODE + " LIKE '%" + course.getCourseCode().getCode() + "%') AND (" + COLUMN_FACULTY_CODE + " LIKE '%" + course.getCourseCode().getFaculty() + "%'))";
                 break;
             case 5:
-                query = "SELECT * FROM " + COURSE_TABLE + " WHERE ((" + COLUMN_DAY_OFFERED_ONE + " = '" + course.getDayOfWeek1().toString() + "') OR (" + COLUMN_DAY_OFFERED_TWO + " = " + course.getDayOfWeek2().toString() + ")) AND ((" + COLUMN_COURSE_CODE + " LIKE '%" + course.getCourseCode().getCode() + "%') AND (" + COLUMN_FACULTY_CODE + " LIKE '%" + course.getCourseCode().getFaculty() + "%'))";
+                query = "SELECT * FROM " + COURSE_TABLE + " WHERE ((" + COLUMN_DAY_OFFERED_ONE + " = '" + course.getDayOfWeek1().toString() + "') OR (" + COLUMN_DAY_OFFERED_TWO + " = '" + course.getDayOfWeek1().toString() + "')) AND ((" + COLUMN_COURSE_CODE + " LIKE '%" + course.getCourseCode().getCode() + "%') AND (" + COLUMN_FACULTY_CODE + " LIKE '%" + course.getCourseCode().getFaculty() + "%'))";
                 break;
             case 6:
                 query = "SELECT * FROM " + COURSE_TABLE + " WHERE ((" + COLUMN_COURSE_CODE + " LIKE '%" + course.getCourseCode().getCode() + "%') AND (" + COLUMN_FACULTY_CODE + " LIKE '%" + course.getCourseCode().getFaculty() + "%')) AND " + COLUMN_COURSE_NAME + " LIKE '%" + course.getCourseName() + "%'";
                 break;
             case 7:
-                query = "SELECT * FROM " + COURSE_TABLE + " WHERE ((" + COLUMN_DAY_OFFERED_ONE + " = '" + course.getDayOfWeek1().toString() + "') OR (" + COLUMN_DAY_OFFERED_TWO + " = " + course.getDayOfWeek2().toString() + ")) AND ((" + COLUMN_COURSE_CODE + " LIKE '%" + course.getCourseCode().getCode() + "%') AND (" + COLUMN_FACULTY_CODE + " LIKE '%" + course.getCourseCode().getFaculty() + "%')) AND " + COLUMN_COURSE_NAME + " LIKE '%" + course.getCourseName() + "%'";
+                query = "SELECT * FROM " + COURSE_TABLE + " WHERE ((" + COLUMN_DAY_OFFERED_ONE + " = '" + course.getDayOfWeek1().toString() + "') OR (" + COLUMN_DAY_OFFERED_TWO + " = '" + course.getDayOfWeek1().toString() + "')) AND ((" + COLUMN_COURSE_CODE + " LIKE '%" + course.getCourseCode().getCode() + "%') AND (" + COLUMN_FACULTY_CODE + " LIKE '%" + course.getCourseCode().getFaculty() + "%')) AND " + COLUMN_COURSE_NAME + " LIKE '%" + course.getCourseName() + "%'";
                 break;
         }
 

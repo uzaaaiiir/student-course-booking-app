@@ -45,6 +45,7 @@ public class Course implements Serializable {
     public Course(CourseCode courseCode, String courseName) {
         this.courseCode = courseCode;
         this.courseName = courseName;
+        this.studentsEnrolled = new ArrayList<User>();
     }
 
     public static void setSelectedCourse(Course course) { selectedCourse = course; }

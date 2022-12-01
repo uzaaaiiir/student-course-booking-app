@@ -34,6 +34,13 @@ public class StudentMainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) { startNewActivity(SearchCoursesActivity.class); }
         });
+
+        viewCourses.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startNewActivity(CoursesListActivity.class);
+            }
+        });
     }
 
     private void assignInputs() {

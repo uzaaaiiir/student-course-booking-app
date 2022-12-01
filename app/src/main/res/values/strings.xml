@@ -61,6 +61,7 @@
     <string name="enrolBtn">Enrol in Course</string>
     <string name="unenrolBtn">Unenroll from Course</string>
     <string name="viewEnrolledStudents">View Enrolled Students</string>
+    <string name="viewEnrolledCourses">View Enrolled Courses</string>
     <string-array name="roles">
         <item>Administrator</item>
         <item>Instructor</item>

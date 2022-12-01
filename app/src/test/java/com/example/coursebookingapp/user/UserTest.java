@@ -1,11 +1,15 @@
 package com.example.coursebookingapp.user;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import com.example.coursebookingapp.activities.LoginActivity;
+import com.example.coursebookingapp.course.Course;
+import com.example.coursebookingapp.course.CourseCode;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -78,4 +82,69 @@ public class UserTest {
 
         assertEquals(false, result);
     }
+
+    @Test
+    public void givenWhenStudentIsEnrolled_TrueIsReturned() {
+        User user = new User();
+        Course course = new Course();
+        CourseCode courseCode = new CourseCode("HIS", 211);
+        course.setCourseCode(courseCode);
+        user.enrolInCourse(course);
+
+        boolean result = user.isEnrolled(course);
+
+        assertTrue(result);
+    }
+
+    @Test
+    public void givenWhenStudentIsNotEnrolled_TrueIsReturned() {
+        User user = new User();
+        Course course = new Course();
+        CourseCode courseCode = new CourseCode("HIS", 211);
+        course.setCourseCode(courseCode);
+
+        boolean result = user.isEnrolled(course);
+
+        assertFalse(result);
+    }
+
+    @Test
+    public void givenWhenUserUnenrolsFromCourse_ThenIsEnrolledReturnsFalse() {
+        User user = new User();
+        Course course = new Course();
+        CourseCode courseCode = new CourseCode("HIS", 211);
+        course.setCourseCode(courseCode);
+        user.enrolInCourse(course);
+        user.unenrolFromCourse(course);
+
+        boolean result = user.isEnrolled(course);
+
+        assertFalse(result);
+    }
+
+    @Test
+    public void givenWhenUserEnrolsInCourse_ThenEnrolledStudentsHasCourse() {
+        User user = new User();
+        Course course = new Course();
+        CourseCode courseCode = new CourseCode("HIS", 211);
+        course.setCourseCode(courseCode);
+        user.enrolInCourse(course);
+
+        boolean result = user.getEnrolledCourses().contains(course);
+
+        assertTrue(result);
+    }
+
+    @Test
+    public void givenWhenUserEnrolsInCourse_ThenEnrolledStudentsDoesNotHaveCourse() {
+        User user = new User();
+        Course course = new Course();
+        CourseCode courseCode = new CourseCode("HIS", 211);
+        course.setCourseCode(courseCode);
+
+        boolean result = user.getEnrolledCourses().contains(course);
+
+        assertFalse(result);
+    }
+
 }

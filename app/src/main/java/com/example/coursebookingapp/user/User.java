@@ -14,17 +14,19 @@ import java.util.Date;
 import java.util.List;
 
 public class User implements Serializable {
-    private static final long serialVersionUID = 6529685098267757692L;
+    private static final long serialVersionUID = 12358903454875L;
 
     private static User currentUser;
     private int id;
     private String username;
     private String password;
     private String role;
-    private List<Course> coursesTeaching = new ArrayList<>();
-    public List<Course> enrolledCourses = new ArrayList<>();
+    private List<Course> coursesTeaching;
+    public List<Course> enrolledCourses;
 
     public User() {
+        coursesTeaching = new ArrayList<>();
+        enrolledCourses = new ArrayList<>();
     }
 
     public User(int id, String username, String password, String role) {
@@ -32,6 +34,8 @@ public class User implements Serializable {
         this.username = username;
         this.password = password;
         this.role = role;
+        coursesTeaching = new ArrayList<>();
+        enrolledCourses = new ArrayList<>();
     }
 
     public static void setCurrentUser(User user) {
@@ -99,7 +103,15 @@ public class User implements Serializable {
         return false;
     }
 
+    public List<Course> getEnrolledCourses() {
+        return enrolledCourses;
+    }
+
     public boolean canEnrol(Course course) {
+        if (course.getStartTime1() == null || course.getStartTime2() == null) {
+            return true;
+        }
+
         Calendar cal = Calendar.getInstance();
         cal.setTime(course.getStartTime1());
         cal.add(Calendar.HOUR_OF_DAY, course.getDuration());
@@ -109,6 +121,9 @@ public class User implements Serializable {
         cal.add(Calendar.HOUR_OF_DAY, course.getDuration());
         Date enrollingCourseEndTime2 = cal.getTime();
         for (Course enrolledCourse : enrolledCourses) {
+            if (enrolledCourse.getStartTime1() == null || enrolledCourse.getStartTime2() == null) {
+                return true;
+            }
             Calendar calendar = Calendar.getInstance();
             calendar.setTime(enrolledCourse.getStartTime1());
             calendar.add(Calendar.HOUR_OF_DAY, enrolledCourse.getDuration());
@@ -117,6 +132,10 @@ public class User implements Serializable {
             calendar.setTime(enrolledCourse.getStartTime2());
             calendar.add(Calendar.HOUR_OF_DAY, enrolledCourse.getDuration());
             Date endTime2 = calendar.getTime();
+
+            if (enrolledCourse.getDayOfWeek1() == null || enrolledCourse.getDayOfWeek2() == null) {
+                continue;
+            }
 
             if (enrolledCourse.getDayOfWeek1().equals(course.getDayOfWeek1())) {
                 if ((course.getStartTime1().after(enrolledCourse.getStartTime1()) && course.getStartTime1().before(endTime1))
@@ -148,7 +167,12 @@ public class User implements Serializable {
     }
 
     public boolean isEnrolled(Course course) {
-        return enrolledCourses.contains(course);
+        for (Course enrolledCourse : enrolledCourses) {
+            if (enrolledCourse.getCourseCode().equals(course.getCourseCode())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public boolean addCourseTaught(Course course) {
@@ -204,5 +228,12 @@ public class User implements Serializable {
         boolean exists = databaseHandler.userExists(this);
         databaseHandler.close();
         return exists;
+    }
+
+    public List<User> getUser(Context context) {
+        DatabaseHandler databaseHandler = new DatabaseHandler(context);
+        List<User> users = databaseHandler.getUser(this);
+        databaseHandler.close();
+        return users;
     }
 }
